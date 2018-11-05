@@ -17,6 +17,10 @@ sys.path.insert(0, "..")
 from vmrunner.prettify import color as pretty
 from vmrunner import validate_vm
 import validate_tests
+#from get_testStats import testStats # gets test statistics
+from get_testStats import statOps
+
+
 
 startdir = os.getcwd()
 
@@ -68,6 +72,7 @@ def print_skipped(tests):
 
 class Test:
     """ A class to start a test as a subprocess and pretty-print status """
+
     def __init__(self, path, clean=False, command=['python', '-u', 'test.py'], name=None):
         self.command_ = command
         self.proc_ = None
@@ -76,6 +81,8 @@ class Test:
         self.clean = clean
         self.start_time = None
         self.properties_ = {"time_sensitive": False, "intrusive": False}
+        self.test_time = None
+
         # Extract category and type from the path variable
         # Category is linked to the top level folder e.g. net, fs, hw
         # Type is linked to the type of test e.g. integration, unit, stress
@@ -171,8 +178,9 @@ class Test:
         sys.stdout.flush()
 
     def print_duration(self):
-        print "{0:5.0f}s".format(time.time() - self.start_time),
-        sys.stdout.flush()
+        self.test_time = "{0:5.0f}s".format(time.time() - self.start_time)
+        print self.test_time
+
 
     def wait_status(self):
 
@@ -182,12 +190,15 @@ class Test:
         self.proc_.communicate()
         self.print_duration()
 
+        result = statOps(self.path_,self.test_time)
+        result.register_time_stats()
+
+        # writes to log
         with codecs.open('{}/log_stdout.log'.format(self.path_), encoding='utf-8', errors='replace') as log_stdout:
             self.output_.append(log_stdout.read())
 
         with codecs.open('{}/log_stderr.log'.format(self.path_), encoding='utf-8', errors='replace') as log_stderr:
             self.output_.append(log_stderr.read())
-
 
         if self.proc_.returncode == 0:
             print pretty.PASS_INLINE()
@@ -197,6 +208,7 @@ class Test:
             print pretty.DATA(self.output_[0].encode('ascii', 'ignore').decode('ascii'))
             print pretty.INFO("Process stderr")
             print pretty.DATA(self.output_[1].encode('ascii', 'ignore').decode('ascii'))
+
 
         return self.proc_.returncode
 
