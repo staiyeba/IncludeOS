@@ -82,6 +82,8 @@ class Test:
         self.start_time = None
         self.properties_ = {"time_sensitive": False, "intrusive": False}
         self.test_time = None
+        self.final_time = None
+
 
         # Extract category and type from the path variable
         # Category is linked to the top level folder e.g. net, fs, hw
@@ -181,7 +183,6 @@ class Test:
         self.test_time = "{0:5.0f}s".format(time.time() - self.start_time)
         print self.test_time
 
-
     def wait_status(self):
 
         self.print_start()
@@ -190,8 +191,10 @@ class Test:
         self.proc_.communicate()
         self.print_duration()
 
+        # generate a list for each test test
+        # append list to dictionary for every test result
         result = statOps(self.path_,self.test_time)
-        result.register_time_stats()
+        result.append_test_result()
 
         # writes to log
         with codecs.open('{}/log_stdout.log'.format(self.path_), encoding='utf-8', errors='replace') as log_stdout:
@@ -528,9 +531,15 @@ def create_junit_output(tests):
     with open('output.xml', 'w') as f:
             jx.TestSuite.to_file(f, [ts], prettyprint=False)
 
+def print_time_now():
+    time_now = time.time()
+    print time_now
+    return time_now
+
 
 def main():
     # Find leaf nodes
+    start_time = print_time_now()
     leaves = find_test_folders()
 
     # Populate test objects
@@ -550,6 +559,13 @@ def main():
     stress_result = stress_test([x for x in filtered_tests if x.type_ == "stress"])
     misc_result = misc_working([x for x in filtered_tests if x.type_ == "misc"], "misc")
     linux_result = misc_working([x for x in filtered_tests if x.type_ == "linux"], "linux platform")
+
+    # test time
+    end_time = print_time_now()
+    final_duration = "{0:5.0f}s".format(end_time - start_time)
+    final_duration = statOps("test", final_duration)
+    final_duration.register_total_time()
+
 
     # Print status from test run
     status = max(integration_result, stress_result, misc_result, linux_result)
