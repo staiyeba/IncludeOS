@@ -26,7 +26,9 @@ startdir = os.getcwd()
 
 test_categories = ['fs', 'hw', 'kernel', 'mod', 'net', 'performance', 'plugin', 'posix', 'stl', 'util']
 test_types = ['integration', 'stress', 'unit', 'misc', 'linux']
+test_results = statOps()
 
+# results.append_test_result(test_name, time, status)
 """
 Script used for running all the valid tests in the terminal.
 """
@@ -191,11 +193,6 @@ class Test:
         self.proc_.communicate()
         self.print_duration()
 
-        # generate a list for each test test
-        # append list to dictionary for every test result
-        result = statOps(self.path_,self.test_time)
-        result.append_test_result()
-
         # writes to log
         with codecs.open('{}/log_stdout.log'.format(self.path_), encoding='utf-8', errors='replace') as log_stdout:
             self.output_.append(log_stdout.read())
@@ -205,13 +202,19 @@ class Test:
 
         if self.proc_.returncode == 0:
             print pretty.PASS_INLINE()
+            test_status = "PASS"
         else:
             print pretty.FAIL_INLINE()
             print pretty.INFO("Process stdout")
             print pretty.DATA(self.output_[0].encode('ascii', 'ignore').decode('ascii'))
             print pretty.INFO("Process stderr")
             print pretty.DATA(self.output_[1].encode('ascii', 'ignore').decode('ascii'))
+            test_status = "FAIL"
 
+        # generate a list for each test test
+        # append list to dictionary for every test result
+    #    result = statOps(self.path_,self.test_time, test_status)
+        test_results.append_test_result(self.path_,self.test_time, test_status)
 
         return self.proc_.returncode
 
@@ -469,9 +472,6 @@ def filter_tests(all_tests, arguments):
                 if test.properties_[argument] and test not in tests_added:
                     tests_added.append(test)
 
-
-
-
     # 2) Remove tests defined by the skip argument
     print pretty.INFO("Tests marked skip on command line"), ", ".join(skip_args)
     skipped_tests = [ x for x in tests_added
@@ -531,16 +531,17 @@ def create_junit_output(tests):
     with open('output.xml', 'w') as f:
             jx.TestSuite.to_file(f, [ts], prettyprint=False)
 
-def print_time_now():
+def time_now():
     time_now = time.time()
-    print time_now
     return time_now
 
 
 def main():
     # Find leaf nodes
-    start_time = print_time_now()
+    start_time = time_now()
     leaves = find_test_folders()
+    test_description = sys.argv[2]# has to get what -t has
+    print test_description # get test names for test
 
     # Populate test objects
     all_tests = [ Test(path, args.clean) for path in leaves ]
@@ -560,20 +561,23 @@ def main():
     misc_result = misc_working([x for x in filtered_tests if x.type_ == "misc"], "misc")
     linux_result = misc_working([x for x in filtered_tests if x.type_ == "linux"], "linux platform")
 
-    # test time
-    end_time = print_time_now()
-    final_duration = "{0:5.0f}s".format(end_time - start_time)
-    final_duration = statOps("test", final_duration)
-    final_duration.register_total_time()
-
-
     # Print status from test run
     status = max(integration_result, stress_result, misc_result, linux_result)
     if (status == 0):
         print pretty.SUCCESS(str(test_count - status) + " / " + str(test_count)
                             +  " tests passed, exiting with code 0")
+        final_test_status = "PASS"
     else:
         print pretty.FAIL(str(status) + " / " + str(test_count) + " tests failed ")
+        final_test_status = "FAIL"
+
+
+    test_results.register_time_stats() # should only be called after all tests are over.
+    # test time
+    end_time = time_now()
+    final_duration = "{0:5.0f}s".format(end_time - start_time)
+    #final_time = statOps("test", final_duration, final_test_status)
+    test_results.register_total_time(final_duration, test_description, final_test_status)
 
     # Create Junit output
     if args.junit:
