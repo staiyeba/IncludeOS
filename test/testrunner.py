@@ -9,6 +9,8 @@ import time
 import multiprocessing  # To figure out number of cpus
 import junit_xml as jx
 import codecs
+import psutil
+import re
 
 sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 1) # line buffering
 sys.path.insert(0, ".")
@@ -191,6 +193,9 @@ class Test:
 
         # Start and wait for the process
         self.proc_.communicate()
+        cpu_usage = psutil.cpu_percent()
+        memory_usage = psutil.virtual_memory()
+
         self.print_duration()
 
         # writes to log
@@ -214,7 +219,7 @@ class Test:
         # generate a list for each test test
         # append list to dictionary for every test result
     #    result = statOps(self.path_,self.test_time, test_status)
-        test_results.append_test_result(self.path_,self.test_time, test_status)
+        test_results.append_test_result(self.path_,self.test_time, test_status, cpu_usage)
 
         return self.proc_.returncode
 
@@ -540,8 +545,8 @@ def main():
     # Find leaf nodes
     start_time = time_now()
     leaves = find_test_folders()
-    test_description = sys.argv[2]# has to get what -t has
-    print test_description # get test names for test
+    test_description = ''.join(args.tests)
+    skipped = ''.join(args.skip)
 
     # Populate test objects
     all_tests = [ Test(path, args.clean) for path in leaves ]
@@ -577,7 +582,7 @@ def main():
     end_time = time_now()
     final_duration = "{0:5.0f}s".format(end_time - start_time)
     #final_time = statOps("test", final_duration, final_test_status)
-    test_results.register_total_time(final_duration, test_description, final_test_status)
+    test_results.register_total_time(final_duration, test_description, skipped,  final_test_status)
 
     # Create Junit output
     if args.junit:
