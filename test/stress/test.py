@@ -9,12 +9,16 @@ import os
 includeos_src = os.environ.get('INCLUDEOS_SRC',
                                os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))).split('/test')[0])
 sys.path.insert(0,includeos_src)
+sys.path.insert(0, ".")
+sys.path.insert(0, "..")
 
 from vmrunner import vmrunner
 from vmrunner.prettify import color
+from get_testStats import subTestStats
 
 test_name="Stresstest"
 name_tag = "<" + test_name + ">"
+sub_test_stats = subTestStats()
 
 # We assume malloc will increase / decrease heap pagewise
 PAGE_SIZE = 4096
@@ -44,8 +48,9 @@ sock_mem = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 heap_verified = False
 
-def get_mem():
+def get_mem(sub_test_name_tag):
   name_tag = "<" + test_name + "::get_mem>"
+  sub_test_tag = sub_test_name_tag
 
   try:
     # We expect this socket to allready be opened
@@ -58,12 +63,15 @@ def get_mem():
     return False
 
   print color.INFO(name_tag),"Current VM memory usage reported as ", received
+  print color.INFO(sub_test_tag),"Current VM memory usage reported as ", received
+  sub_test_stats.register_sub_stats(name_tag, sub_test_tag, received)
+
   return int(received)
 
 def get_mem_start():
   global memuse_at_start
   if memuse_at_start == 0:
-      memuse_at_start = get_mem()
+      memuse_at_start = get_mem("Memory_start")
   return memuse_at_start
 
 def memory_increase(lead_time, expected_memuse = memuse_at_start):
@@ -73,7 +81,7 @@ def memory_increase(lead_time, expected_memuse = memuse_at_start):
     # Give the VM a chance to free up resources before asking
     time.sleep(lead_time)
 
-  use = get_mem()
+  use = get_mem("Memory_Increase")
   increase = use - expected_memuse
   percent = 0.0;
   if (increase):
@@ -106,20 +114,20 @@ def UDP_burst(burst_size = BURST_SIZE, burst_interval = BURST_INTERVAL):
     return False
   sock.close()
   time.sleep(burst_interval)
-  return get_mem()
+  return get_mem("MemoryAfter_UDP_Burst")
 
 # Fire a single burst of ICMP packets
 def ICMP_flood(burst_size = BURST_SIZE, burst_interval = BURST_INTERVAL):
   # Note: Ping-flooding requires sudo for optimal speed
   res = subprocess32.check_call(["sudo","ping","-f", HOST, "-c", str(burst_size)], timeout=thread_timeout);
   time.sleep(burst_interval)
-  return get_mem()
+  return get_mem("Memory after ICMP flood")
 
 # Fire a single burst of HTTP requests
 def httperf(burst_size = BURST_SIZE, burst_interval = BURST_INTERVAL):
   res = subprocess32.check_call(["httperf","--hog", "--server", HOST, "--num-conn", str(burst_size)], timeout=thread_timeout);
   time.sleep(burst_interval)
-  return get_mem()
+  return get_mem("MemoryAfter_HTTP_Bombardment")
 
 # Fire a single burst of ARP requests
 def ARP_burst(burst_size = BURST_SIZE, burst_interval = BURST_INTERVAL):
@@ -129,7 +137,7 @@ def ARP_burst(burst_size = BURST_SIZE, burst_interval = BURST_INTERVAL):
   time.sleep(0.5)
   res = subprocess32.check_call(command, timeout=thread_timeout);
   time.sleep(burst_interval)
-  return get_mem()
+  return get_mem("MemoryAfter_ARP_Flooding")
 
 
 
@@ -159,7 +167,7 @@ def crash_test(string):
   ICMP_flood(burst_size, 0)
   httperf(burst_size, 0)
   time.sleep(BURST_INTERVAL)
-  mem_after = get_mem()
+  mem_after = get_mem("Memory_After_Crash_Test")
   print color.INFO("Crash test complete. Memory in use: "), mem_after
   return mem_after >= memuse_at_start
 
@@ -167,7 +175,7 @@ def crash_test(string):
 def fire_bursts(func, sub_test_name, lead_out = 3):
   name_tag = "<" + sub_test_name + ">"
   print color.HEADER(test_name + " initiating "+sub_test_name)
-  membase_start = get_mem()
+  membase_start = get_mem("Memory_StartofFire_Burst")
   mem_base = membase_start
 
   # Track heap behavior
@@ -231,7 +239,7 @@ vm = vmrunner.vms[0]
 # Check for vital signs after all the bombardment is done
 def check_vitals(string):
   print color.INFO("Checking vital signs")
-  mem = get_mem()
+  mem = get_mem("MemoryAt_Finish_Line")
   diff = mem - memuse_at_start
   pages = diff / PAGE_SIZE
   print color.INFO("Memory use at test end:"), mem, "bytes"
