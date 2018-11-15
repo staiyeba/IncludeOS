@@ -23,14 +23,13 @@ import validate_tests
 from get_testStats import statOps
 
 
-
 startdir = os.getcwd()
 
 test_categories = ['fs', 'hw', 'kernel', 'mod', 'net', 'performance', 'plugin', 'posix', 'stl', 'util']
 test_types = ['integration', 'stress', 'unit', 'misc', 'linux']
 test_results = statOps()
+#dept_test_stats = deptTestStats()
 
-# results.append_test_result(test_name, time, status)
 """
 Script used for running all the valid tests in the terminal.
 """
@@ -194,7 +193,9 @@ class Test:
         # Start and wait for the process
         self.proc_.communicate()
         cpu_usage = psutil.cpu_percent()
-        memory_usage = psutil.virtual_memory()
+        memory_usage = None #psutil.virtual_memory()
+        machine = os.uname()[4]#.replace(" ", "_")
+
 
         self.print_duration()
 
@@ -216,10 +217,7 @@ class Test:
             print pretty.DATA(self.output_[1].encode('ascii', 'ignore').decode('ascii'))
             test_status = "FAIL"
 
-        # generate a list for each test test
-        # append list to dictionary for every test result
-    #    result = statOps(self.path_,self.test_time, test_status)
-        test_results.append_test_result(self.path_,self.test_time, test_status, cpu_usage)
+        test_results.append_stat_to_list(self.path_,self.test_time, test_status, cpu_usage, memory_usage, machine)
 
         return self.proc_.returncode
 
@@ -392,7 +390,6 @@ def integration_tests(tests):
             sys.exit(fail_count)
 
     return fail_count
-
 
 def find_test_folders():
     """ Used to find all (integration) test folders
@@ -577,12 +574,12 @@ def main():
         final_test_status = "FAIL"
 
 
-    test_results.register_time_stats() # should only be called after all tests are over.
+    test_results.save_stats_csv() # should only be called after all tests are over.
     # test time
     end_time = time_now()
     final_duration = "{0:5.0f}s".format(end_time - start_time)
     #final_time = statOps("test", final_duration, final_test_status)
-    test_results.register_total_time(final_duration, test_description, skipped,  final_test_status)
+    test_results.register_final_stats(final_duration, test_description, skipped,  final_test_status)
 
     # Create Junit output
     if args.junit:
