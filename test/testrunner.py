@@ -7,7 +7,7 @@ import argparse
 import json
 import time
 import multiprocessing  # To figure out number of cpus
-import junit_xml as jx
+#import junit_xml as jx
 import codecs
 import psutil
 import re
@@ -19,7 +19,7 @@ sys.path.insert(0, "..")
 from vmrunner.prettify import color as pretty
 from vmrunner import validate_vm
 import validate_tests
-#from get_testStats import testStats # gets test statistics
+from get_testStats import subTestStats # gets test statistics
 from get_testStats import statOps
 
 
@@ -28,7 +28,7 @@ startdir = os.getcwd()
 test_categories = ['fs', 'hw', 'kernel', 'mod', 'net', 'performance', 'plugin', 'posix', 'stl', 'util']
 test_types = ['integration', 'stress', 'unit', 'misc', 'linux']
 test_results = statOps()
-#dept_test_stats = deptTestStats()
+sub_test_stats = subTestStats()
 
 """
 Script used for running all the valid tests in the terminal.
@@ -294,6 +294,7 @@ def stress_test(stress_tests):
 
     for test in stress_tests:
         return 1 if test.wait_status() else 0
+
 
 
 def misc_working(misc_tests, test_type):

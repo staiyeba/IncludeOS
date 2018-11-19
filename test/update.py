@@ -6,8 +6,7 @@ import csv
 #import gspread
 #print(openpyxl.__version__)
 
-user_choice = {"yes": True, "y": True, "ye": True,
-         "no": False, "n": False}
+user_choice = {"y": True, "n": False}
 
 def read_csv(in_filename):
 
@@ -47,11 +46,12 @@ def new_sheet(choice):
         return None
 
 
-def main(in_filename, out_filename):
+def main(in_filename, out_filename, sheet_choice):
 
     gc = pygsheets.authorize(
         outh_file="client_secret.json",
         outh_nonlocal=True)
+
 
     all_sheets = gc.list_ssheets()
     all_names = [sheet['name'] for sheet in all_sheets]
@@ -81,9 +81,11 @@ def main(in_filename, out_filename):
             else:
                 sys.stdout.write(
                     "Please respond with the name of the Google Sheet.\n")
-
+    wksheet_choice = sheet_choice
     sh = gc.open(sheet_name)
-    wks = sh.sheet1
+    wks = sh.sheet1 # wksheet_choice #
+#    print sh.Worksheet("Stress-test").title
+
 
     read_from_file = read_csv(in_filename)
     for row in read_from_file:

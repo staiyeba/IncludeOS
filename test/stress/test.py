@@ -48,9 +48,8 @@ sock_mem = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 heap_verified = False
 
-def get_mem(sub_test_name_tag):
+def get_mem(sub_test_tag):
   name_tag = "<" + test_name + "::get_mem>"
-  sub_test_tag = sub_test_name_tag
 
   try:
     # We expect this socket to allready be opened
@@ -64,24 +63,26 @@ def get_mem(sub_test_name_tag):
 
   print color.INFO(name_tag),"Current VM memory usage reported as ", received
   print color.INFO(sub_test_tag),"Current VM memory usage reported as ", received
-  sub_test_stats.register_sub_stats(name_tag, sub_test_tag, received)
+  sub_test_stats.append_sub_stats(test_name, sub_test_tag, received)
 
   return int(received)
 
 def get_mem_start():
   global memuse_at_start
+  sub_test_tag = "Memory_start"
   if memuse_at_start == 0:
-      memuse_at_start = get_mem("Memory_start")
+      memuse_at_start = get_mem(sub_test_tag)
   return memuse_at_start
 
 def memory_increase(lead_time, expected_memuse = memuse_at_start):
   name_tag = "<" + test_name + "::memory_increase>"
+  sub_test_tag = "Memory_Increase"
   if lead_time:
     print color.INFO(name_tag),"Checking for memory increase after a lead time of ",lead_time,"s."
     # Give the VM a chance to free up resources before asking
     time.sleep(lead_time)
 
-  use = get_mem("Memory_Increase")
+  use = get_mem(sub_test_tag)
   increase = use - expected_memuse
   percent = 0.0;
   if (increase):
@@ -97,6 +98,7 @@ def memory_increase(lead_time, expected_memuse = memuse_at_start):
 # Fire a single burst of UDP packets
 def UDP_burst(burst_size = BURST_SIZE, burst_interval = BURST_INTERVAL):
   global memuse_at_start
+  sub_test_tag = "MemoryAfter_UDP_Burst"
   sock = socket.socket
   # SOCK_DGRAM is the socket type to use for UDP sockets
   sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -114,30 +116,33 @@ def UDP_burst(burst_size = BURST_SIZE, burst_interval = BURST_INTERVAL):
     return False
   sock.close()
   time.sleep(burst_interval)
-  return get_mem("MemoryAfter_UDP_Burst")
+  return get_mem(sub_test_tag)
 
 # Fire a single burst of ICMP packets
 def ICMP_flood(burst_size = BURST_SIZE, burst_interval = BURST_INTERVAL):
+  sub_test_tag = "Memory_After_ICMP_flood"
   # Note: Ping-flooding requires sudo for optimal speed
   res = subprocess32.check_call(["sudo","ping","-f", HOST, "-c", str(burst_size)], timeout=thread_timeout);
   time.sleep(burst_interval)
-  return get_mem("Memory after ICMP flood")
+  return get_mem(sub_test_tag)
 
 # Fire a single burst of HTTP requests
 def httperf(burst_size = BURST_SIZE, burst_interval = BURST_INTERVAL):
+  sub_test_tag = "MemoryAfter_HTTP_Bombardment"
   res = subprocess32.check_call(["httperf","--hog", "--server", HOST, "--num-conn", str(burst_size)], timeout=thread_timeout);
   time.sleep(burst_interval)
-  return get_mem("MemoryAfter_HTTP_Bombardment")
+  return get_mem(sub_test_tag)
 
 # Fire a single burst of ARP requests
 def ARP_burst(burst_size = BURST_SIZE, burst_interval = BURST_INTERVAL):
+  sub_test_tag = "MemoryAfter_ARP_Flooding"
   # Note: Arping requires sudo, and we expect the bridge 'bridge43' to be present
   command = ["sudo", "arping", "-q","-w", str(100), "-I", "bridge43", "-c", str(burst_size * 10),  HOST]
   print color.DATA(" ".join(command))
   time.sleep(0.5)
   res = subprocess32.check_call(command, timeout=thread_timeout);
   time.sleep(burst_interval)
-  return get_mem("MemoryAfter_ARP_Flooding")
+  return get_mem(sub_test_tag)
 
 
 
@@ -149,6 +154,7 @@ def heap_ok(line):
 
 def crash_test(string):
   print color.INFO("Opening persistent TCP connection for diagnostics")
+  sub_test_tag = "Memory_After_Crash_Test"
   sock_mem.connect((HOST, PORT_MEM))
   mem_before = get_mem_start()
   if mem_before <= 0:
@@ -167,15 +173,16 @@ def crash_test(string):
   ICMP_flood(burst_size, 0)
   httperf(burst_size, 0)
   time.sleep(BURST_INTERVAL)
-  mem_after = get_mem("Memory_After_Crash_Test")
+  mem_after = get_mem(sub_test_tag)
   print color.INFO("Crash test complete. Memory in use: "), mem_after
   return mem_after >= memuse_at_start
 
 # Fire several bursts, e.g. trigger a function that fires bursts, several times
 def fire_bursts(func, sub_test_name, lead_out = 3):
+  sub_test_tag = "Memory_StartofFire_Burst"
   name_tag = "<" + sub_test_name + ">"
   print color.HEADER(test_name + " initiating "+sub_test_name)
-  membase_start = get_mem("Memory_StartofFire_Burst")
+  membase_start = get_mem(sub_test_tag)
   mem_base = membase_start
 
   # Track heap behavior
@@ -184,7 +191,8 @@ def fire_bursts(func, sub_test_name, lead_out = 3):
   constant = 0
 
   for i in range(0,BURST_COUNT):
-    print color.INFO(name_tag), " Run ", i+1
+    iter_count = i+1
+    print color.INFO(name_tag), " Run ", iter_count
     memi = func()
     if memi > mem_base:
       memincrease =  memi - mem_base
@@ -239,7 +247,8 @@ vm = vmrunner.vms[0]
 # Check for vital signs after all the bombardment is done
 def check_vitals(string):
   print color.INFO("Checking vital signs")
-  mem = get_mem("MemoryAt_Finish_Line")
+  sub_test_tag = "MemoryAt_Finish_Line"
+  mem = get_mem(sub_test_tag)
   diff = mem - memuse_at_start
   pages = diff / PAGE_SIZE
   print color.INFO("Memory use at test end:"), mem, "bytes"

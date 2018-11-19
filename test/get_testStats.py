@@ -9,7 +9,6 @@ import ntpath
 import multiprocessing
 import os
 
-
 #sub_test_stats = subTestStats()
 
 class statOps:
@@ -37,8 +36,9 @@ class statOps:
             writer = csv.writer(csv_file, delimiter="\t", quoting = csv.QUOTE_NONE)
             writer.writerows(self.test_results.values())
 
-        sheet_name = "test-sheet"
-        update.main(filename, sheet_name)
+        sheet_name = "Includeos-Sub-Test-Stats"
+        sheet_choice = "sh.sheet1"
+        update.main(filename, sheet_name, sheet_choice)
 
     # fetch and register test name and time taken by test
     def save_stats_csv(self):
@@ -47,15 +47,16 @@ class statOps:
         self.clean_csv(filename)
 
     def register_final_stats(self, final_time, test_description, skipped, test_status): # name # time (end - start)
-        sheet_name = "IncludeOS-testing-stats"
+        sheet_name = "IncludeOS-Test-Stats" #"IncludeOS-testing-stats"
         filename = "TestStats.csv"
+        sheet_choice = "sh.sheet1"
         num_cpus = int(multiprocessing.cpu_count())
         machine = os.uname()[3]#.replace(" ", "_")
         total_test_data = [self.now, final_time[:-1], test_description, skipped, test_status, "%s" % ''.join(self.last_git_commit), num_cpus, machine]
         with open("%s" % filename,'wb+') as csv_file:
             writer = csv.writer(csv_file,lineterminator='\n')
             writer.writerow(total_test_data)
-        update.main(filename, sheet_name)
+        update.main(filename, sheet_name, sheet_choice)
         self.clean_csv(filename)
 
 class subTestStats(statOps):
@@ -66,24 +67,37 @@ class subTestStats(statOps):
         self.now = dt.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
         self.sub_stat_results = {}
 
-
-    # fetch stress test stats for every test in stress test and build_service.
-    def register_sub_stats(self, name_tag, test_tag, var_num):
-        filename = '{0}{1}.csv'.format(name_tag, self.now)
-        print filename
-        key = ntpath.basename(name_tag)
-        if key not in self.sub_stat_results:
-            self.sub_stat_results[key] = []
-
-        stat_list = [test_tag, var_num]
-        print stat_list
-        self.sub_stat_results[key].append('%s' % ', '.join(map(str, stat_list)))
-
+    def register_sub_stats(self, test_name):
         keys = sorted(self.sub_stat_results.keys())
+        print keys
+        print self.sub_stat_results
+        filename = '{0}.csv'.format(test_name)
         with open("%s" % filename, "wb+") as csv_file:
             writer = csv.writer(csv_file, delimiter="\t", quoting = csv.QUOTE_NONE)
             writer.writerows(self.sub_stat_results.values())
 
+    def save_stats_csv(self, test_name):
+        print "to register " + test_name
+        print self.sub_stat_results
+
+        self.register_sub_stats(test_name)
+    #    self.clean_csv(filename)
+
+    # fetch stress test stats for every test in stress test and build_service.
+    def append_sub_stats(self, name_tag, test_tag, var_num):
+    #    print filename
+        key = test_tag #ntpath.basename(name_tag)
+        if key not in self.sub_stat_results:
+            self.sub_stat_results[key] = []
+
+        stat_list = [test_tag, var_num]
+        self.sub_stat_results[key].append('%s' % ', '.join(map(str, stat_list)))
+
+
+        #sheet_name = "Includeos-Sub-Test-Stats"
+        # sheet_choice = "sh-sheet2" #if stress test
+        # sheet_choice = "sh-sheet3" #if build services
+        # update.main(filename, sheet_name, sheet_choice)
     #    statOps.register_all_test_stats(data, filename)
     #    self.clean_csv(filename)
 
