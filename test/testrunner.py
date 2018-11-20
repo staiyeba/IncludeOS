@@ -580,7 +580,8 @@ def main():
     end_time = time_now()
     final_duration = "{0:5.0f}s".format(end_time - start_time)
     #final_time = statOps("test", final_duration, final_test_status)
-    test_results.register_final_stats(final_duration, test_description, skipped,  final_test_status)
+    fail_count = status
+    test_results.register_final_stats(final_duration, test_description, skipped,  final_test_status, fail_count)
 
     # Create Junit output
     if args.junit:

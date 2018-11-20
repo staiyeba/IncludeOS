@@ -48,13 +48,13 @@ class statOps:
         self.register_all_test_stats(filename)
         self.clean_csv(filename)
 
-    def register_final_stats(self, final_time, test_description, skipped, test_status): # name # time (end - start)
+    def register_final_stats(self, final_time, test_description, skipped, test_status, fail_count): # name # time (end - start)
         sheet_name = "IncludeOS-Test-Stats" #"IncludeOS-testing-stats"
         filename = "TestStats.csv"
         sheet_choice = "sh.sheet1"
         num_cpus = int(multiprocessing.cpu_count())
         machine = os.uname()[3]#.replace(" ", "_")
-        total_test_data = [self.now, final_time[:-1], test_description, skipped, test_status, self.latest_git_tag, "%s" % ''.join(self.last_git_commit), num_cpus, machine]
+        total_test_data = [self.now, final_time[:-1], test_description, skipped, test_status, self.latest_git_tag, "%s" % ''.join(self.last_git_commit), num_cpus, machine, fail_count]
         with open("%s" % filename,'wb+') as csv_file:
             writer = csv.writer(csv_file,lineterminator='\n')
             writer.writerow(total_test_data)
