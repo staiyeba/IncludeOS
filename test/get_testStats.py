@@ -16,6 +16,8 @@ class statOps:
         dt = datetime.datetime.utcnow()
         self.now = dt.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
         self.last_git_commit = subprocess.check_output(['git','log', '--date=iso-strict-local','-n 1','--pretty=format: %h, %ad']).strip()
+        self.latest_git_tag = subprocess.check_output(['git', 'describe', '--abbrev=0', '--tags']).strip()
+        # git describe --tags $(git rev-list --tags --max-count=1)
         self.test_results = {}
         self.final_time = None
 
@@ -52,7 +54,7 @@ class statOps:
         sheet_choice = "sh.sheet1"
         num_cpus = int(multiprocessing.cpu_count())
         machine = os.uname()[3]#.replace(" ", "_")
-        total_test_data = [self.now, final_time[:-1], test_description, skipped, test_status, "%s" % ''.join(self.last_git_commit), num_cpus, machine]
+        total_test_data = [self.now, final_time[:-1], test_description, skipped, test_status, self.latest_git_tag, "%s" % ''.join(self.last_git_commit), num_cpus, machine]
         with open("%s" % filename,'wb+') as csv_file:
             writer = csv.writer(csv_file,lineterminator='\n')
             writer.writerow(total_test_data)
