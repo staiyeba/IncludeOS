@@ -33,26 +33,7 @@ pipeline {
                 echo 'Testing..'
                 sh '''
                 cd test
-                ./testrunner.py -s intrusive misc net stress -p 1
-                '''
-            }
-        }
-        stage('Build-Misc') {
-            steps {
-                echo 'Deploying Services....'
-                sh '''
-                cd test
-                ./testrunner.py -s intrusive -t misc -p 1
-                '''
-            }
-        }
-
-        stage('Stress Test') {
-            steps {
-                echo 'Stress Testing ...'
-                sh '''
-                cd test
-                ./testrunner.py -s intrusive -t stress -p 1
+                ./testrunner.py -s intrusive -p 1
                 '''
             }
         }
