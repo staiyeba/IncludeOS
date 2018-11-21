@@ -25,7 +25,7 @@ class statOps:
         subprocess.call(["rm %s" % filename], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
 
     def append_stat_to_list(self, test_name, test_time, test_status, cpu_usage, memory_usage, machine):
-        key = ntpath.basename(test_name)
+        key = ntpath.basename(test_name) + os.path.split(test_name)[0]
         if key not in self.test_results:
             self.test_results[key] = []
 
