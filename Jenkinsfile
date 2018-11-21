@@ -52,11 +52,4 @@ pipeline {
             }
         }
     }
-/*    post {
-        always {
-	    /* slackNotifier - current build result as parameter */
-            slackNotifier
-            cleanWs()
-        }
-    } */
 }
