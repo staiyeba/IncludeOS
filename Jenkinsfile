@@ -12,7 +12,8 @@ pipeline {
     }
 
     options {
-        buildDiscarder(logRotator(numToKeepStr: '100'))
+        buildDiscarder(logRotator(numToKeepStr: '5'))
+        timestamps()
     }
 
     stages {
@@ -32,8 +33,30 @@ pipeline {
             steps {
                 echo 'Testing..'
                 sh '''
+                . ./etc/use_clang_version.sh
                 cd test
                 ./testrunner.py -s intrusive -p 1
+                '''
+            }
+        }
+        stage('Build-Misc') {
+            steps {
+                echo 'Deploying Services....'
+                sh '''
+                . ./etc/use_clang_version.sh
+                cd test
+                ./testrunner.py -s intrusive -t misc -p 1
+                '''
+            }
+        }
+
+        stage('Stress Test') {
+            steps {
+                echo 'Stress Testing ...'
+                sh '''
+                . ./etc/use_clang_version.sh
+                cd test
+                ./testrunner.py -s intrusive -t stress -p 1
                 '''
             }
         }
