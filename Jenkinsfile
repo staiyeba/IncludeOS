@@ -19,16 +19,19 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building..'
-                sh './install.sh -y'
+                sh '''
+                ./install.sh -y
+                '''
             }
         }
         stage('Test') {
             steps {
                 echo 'Testing..'
                 sh '''
-                cp ~/config/* test/
                 cd test
+                cp ~/config/* .
                 ./testrunner.py -s intrusive misc net stress
+
                 '''
             }
         }
