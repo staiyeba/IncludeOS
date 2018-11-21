@@ -19,9 +19,13 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building..'
-                sh '''
-                ./install.sh -y
-                '''
+                sh './install.sh -y'
+            }
+        }
+        stage('Stat-Configs') {
+            steps {
+                echo 'configuring ..'
+                sh 'cp ~/config/* $(pwd)/test/'
             }
         }
         stage('Test') {
@@ -29,9 +33,7 @@ pipeline {
                 echo 'Testing..'
                 sh '''
                 cd test
-                cp ~/config/* .
                 ./testrunner.py -s intrusive misc net stress
-
                 '''
             }
         }
@@ -54,5 +56,14 @@ pipeline {
                 '''
             }
         }
+    }
+    post {
+      success {
+        slackSend (color: '#00FF00', message: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+      }
+
+      failure {
+        slackSend (color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+      }
     }
 }
