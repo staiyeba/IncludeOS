@@ -32,6 +32,7 @@ pipeline {
             steps {
                 echo 'configuring ..'
                 sh '''
+                env
                 cp ~/config/* $(pwd)/test/
                 ./build_x86_64/unittests/unittests || exit 1
                 '''
