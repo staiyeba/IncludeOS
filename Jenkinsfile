@@ -35,31 +35,11 @@ pipeline {
                 sh '''
                 . ./etc/use_clang_version.sh
                 cd test
-                ./testrunner.py -s intrusive -p 1
-                '''
-            }
-        }
-        stage('Build-Misc') {
-            steps {
-                echo 'Deploying Services....'
-                sh '''
-                . ./etc/use_clang_version.sh
-                cd test
-                ./testrunner.py -s intrusive -t misc -p 1
+                ./testrunner.py -s intrusive net -p 1
                 '''
             }
         }
 
-        stage('Stress Test') {
-            steps {
-                echo 'Stress Testing ...'
-                sh '''
-                . ./etc/use_clang_version.sh
-                cd test
-                ./testrunner.py -s intrusive -t stress -p 1
-                '''
-            }
-        }
     }
     post {
       success {
