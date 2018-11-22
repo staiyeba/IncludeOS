@@ -78,7 +78,7 @@ class subTestStats(statOps):
             writer = csv.writer(csv_file, delimiter="\t", quoting = csv.QUOTE_NONE)
             writer.writerows(self.sub_stat_results.values())
 
-    def save_stats_csv(self, test_name):
+    def save_sub_stats_csv(self, test_name):
         print "to register " + test_name
         print self.sub_stat_results
 

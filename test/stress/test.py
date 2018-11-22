@@ -144,13 +144,10 @@ def ARP_burst(burst_size = BURST_SIZE, burst_interval = BURST_INTERVAL):
   time.sleep(burst_interval)
   return get_mem(sub_test_tag)
 
-
-
 def heap_ok(line):
     global heap_verified
     heap_verified = True
     print color.INFO("Stresstest::heap_ok"), "VM reports heap is increasing and decreasing as expected"
-
 
 def crash_test(string):
   print color.INFO("Opening persistent TCP connection for diagnostics")
@@ -222,7 +219,6 @@ def fire_bursts(func, sub_test_name, lead_out = 3):
     return False
   print color.PASS(sub_test_name + " succeeded ")
   return True
-
 
 # Trigger several UDP bursts
 def ARP(string):

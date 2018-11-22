@@ -294,6 +294,7 @@ def stress_test(stress_tests):
 
     for test in stress_tests:
         return 1 if test.wait_status() else 0
+    sub_test_stats.save_sub_stats_csv("stresstest")
 
 
 
