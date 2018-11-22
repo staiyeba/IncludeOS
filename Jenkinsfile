@@ -23,8 +23,6 @@ pipeline {
                 sh '''
                 . ./etc/use_clang_version.sh
                 ./install.sh -y
-                cd test
-                ./testrunner.py -s intrusive net -p 1
                 '''
             }
         }
@@ -40,7 +38,7 @@ pipeline {
                 sh '''
                 . ./etc/use_clang_version.sh
                 cd test
-                ./testrunner.py -t stress -p 1
+                python -u testrunner.py -t stress -p 1
                 '''
             }
         }
