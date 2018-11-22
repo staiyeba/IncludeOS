@@ -38,7 +38,7 @@ pipeline {
                 sh '''
                 . ./etc/use_clang_version.sh
                 cd test
-                python -u testrunner.py -s intrusive -p 1
+                python testrunner.py -s intrusive -p 1
                 '''
             }
         }
