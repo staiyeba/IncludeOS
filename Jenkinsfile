@@ -6,9 +6,9 @@ pipeline {
     }
 
     environment {
-      INCLUDEOS_SRC=~/IncludeOS
-      CC= "clang-5.0"
-      CXX= "clang++-5.0"
+      INCLUDEOS_SRC = "~/IncludeOS"
+      CC = "clang-5.0"
+      CXX = "clang++-5.0"
       INCLUDEOS_PREFIX = "${env.WORKSPACE + '/IncludeOS_install'}"
       INCLUDEOS_ENABLE_TEST = "ON"
       num_jobs = "-j 8"
