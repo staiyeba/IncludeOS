@@ -20,7 +20,10 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building..'
-                sh './install.sh -y'
+                sh '''
+                . ./etc/use_clang_version.sh
+                ./install.sh -y
+                '''
             }
         }
         stage('Stat-Configs') {
