@@ -6,6 +6,9 @@ pipeline {
     }
 
     environment {
+      INCLUDEOS_SRC=~/IncludeOS
+      CC= "clang-5.0"
+      CXX= "clang++-5.0"
       INCLUDEOS_PREFIX = "${env.WORKSPACE + '/IncludeOS_install'}"
       INCLUDEOS_ENABLE_TEST = "ON"
       num_jobs = "-j 8"
@@ -36,6 +39,7 @@ pipeline {
             steps {
                 echo 'Testing..'
                 sh '''
+                chmod u+w ~
                 . ./etc/use_clang_version.sh
                 cd test
                 python testrunner.py -s intrusive -p 1
