@@ -6,7 +6,7 @@ pipeline {
     }
 
     environment {
-      INCLUDEOS_SRC = "~/IncludeOS"
+      INCLUDEOS_SRC = "${env.WORKSPACE}"
       INCLUDEOS_PREFIX = "${env.WORKSPACE + '/IncludeOS_install'}"
       INCLUDEOS_ENABLE_TEST = "ON"
       num_jobs = "-j 8"
@@ -56,3 +56,10 @@ pipeline {
       }
     }
 }
+
+export INCLUDEOS_SRC=~/IncludeOS
+export INCLUDEOS_PREFIX=~/IncludeOS_install
+export CC=clang-5.0
+export CXX=clang++-5.0
+export num_jobs="-j 8"
+export INCLUDEOS_ENABLE_TEST=OFF
