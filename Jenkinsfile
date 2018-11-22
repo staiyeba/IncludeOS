@@ -9,6 +9,7 @@ pipeline {
       INCLUDEOS_SRC = "${env.WORKSPACE}"
       INCLUDEOS_PREFIX = "${env.WORKSPACE + '/IncludeOS_install'}"
       INCLUDEOS_ENABLE_TEST = "ON"
+      INCLUDEOS_ENABLE_LXP = "ON"
       num_jobs = "-j 8"
     }
 
@@ -30,7 +31,10 @@ pipeline {
         stage('Stat-Configs') {
             steps {
                 echo 'configuring ..'
-                sh 'cp ~/config/* $(pwd)/test/'
+                sh '''
+                cp ~/config/* $(pwd)/test/
+                ./build_x86_64/unittests/unittests || exit 1
+                '''
             }
         }
         stage('Test') {
