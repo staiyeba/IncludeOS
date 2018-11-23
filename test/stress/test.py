@@ -19,7 +19,7 @@ from get_testStats import subTestStats
 test_name="Stresstest"
 name_tag = "<" + test_name + ">"
 sub_test_stats = subTestStats()
-
+iter_count = 0
 # We assume malloc will increase / decrease heap pagewise
 PAGE_SIZE = 4096
 
@@ -63,7 +63,7 @@ def get_mem(sub_test_tag):
 
   print color.INFO(name_tag),"Current VM memory usage reported as ", received
   print color.INFO(sub_test_tag),"Current VM memory usage reported as ", received
-  sub_test_stats.append_sub_stats(test_name, sub_test_tag, received)
+  sub_test_stats.append_sub_stats(test_name, sub_test_tag, received, iter_count)
 
   return int(received)
 
@@ -252,6 +252,7 @@ def check_vitals(string):
   sock_mem.close()
   vm.stop()
   wait_for_tw()
+  sub_test_stats.save_sub_stats_csv("stresstest")
   return True
 
 # Wait for sockets to exit TIME_WAIT status

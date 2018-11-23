@@ -35,7 +35,7 @@ class statOps:
     def register_all_test_stats(self, filename):
         keys = sorted(self.test_results.keys())
         with open("%s" % filename, "wb+") as csv_file:
-            writer = csv.writer(csv_file, delimiter="\t", quoting = csv.QUOTE_NONE)
+            writer = csv.writer(csv_file, delimiter="\t", quoting=csv.QUOTE_NONE)
             writer.writerows(self.test_results.values())
 
         sheet_name = "Includeos-Sub-Test-Stats"
@@ -71,37 +71,44 @@ class subTestStats(statOps):
 
     def register_sub_stats(self, test_name):
         keys = sorted(self.sub_stat_results.keys())
-        print keys
+        print test_name
         print self.sub_stat_results
-        filename = '{0}.csv'.format(test_name)
-        with open("%s" % filename, "wb+") as csv_file:
-            writer = csv.writer(csv_file, delimiter="\t", quoting = csv.QUOTE_NONE)
+        sub_filename = '{0}.csv'.format(test_name)
+        print sub_filename
+#        with open("%s" % sub_filename, 'w+') as sub_csv_file:
+        with open(os.path.join(dir, "stresstest"+'.csv'), "w") as sub_csv_file:
+            sub_csv_file=StringIO.StringIO()
+            print sub_csv_file
+            writer = csv.writer(sub_csv_file, delimiter="\t", quoting = csv.QUOTE_NONE)
             writer.writerows(self.sub_stat_results.values())
+
+        subprocess.call(['cat %s' % sub_filename], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
 
     def save_sub_stats_csv(self, test_name):
         print "to register " + test_name
         print self.sub_stat_results
-
         self.register_sub_stats(test_name)
-    #    self.clean_csv(filename)
+    #    self.clean_csv(sub_filename)
 
     # fetch stress test stats for every test in stress test and build_service.
-    def append_sub_stats(self, name_tag, test_tag, var_num):
-    #    print filename
+    def append_sub_stats(self, name_tag, test_tag, var_num, count):
+    #    print sub_filename
         key = test_tag #ntpath.basename(name_tag)
         if key not in self.sub_stat_results:
             self.sub_stat_results[key] = []
 
-        stat_list = [test_tag, var_num]
+        stat_list = test_tag, var_num, count
         self.sub_stat_results[key].append('%s' % ', '.join(map(str, stat_list)))
+        print stat_list
+        print self.sub_stat_results
 
 
         #sheet_name = "Includeos-Sub-Test-Stats"
         # sheet_choice = "sh-sheet2" #if stress test
         # sheet_choice = "sh-sheet3" #if build services
-        # update.main(filename, sheet_name, sheet_choice)
-    #    statOps.register_all_test_stats(data, filename)
-    #    self.clean_csv(filename)
+        # update.main(sub_filename, sheet_name, sheet_choice)
+    #    statOps.register_all_test_stats(data, sub_filename)
+    #    self.clean_csv(sub_filename)
 
 
     #    self.start_time

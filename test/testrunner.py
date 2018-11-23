@@ -28,7 +28,7 @@ startdir = os.getcwd()
 test_categories = ['fs', 'hw', 'kernel', 'mod', 'net', 'performance', 'plugin', 'posix', 'stl', 'util']
 test_types = ['integration', 'stress', 'unit', 'misc', 'linux']
 test_results = statOps()
-sub_test_stats = subTestStats()
+sub_tests = subTestStats()
 
 """
 Script used for running all the valid tests in the terminal.
@@ -294,7 +294,6 @@ def stress_test(stress_tests):
 
     for test in stress_tests:
         return 1 if test.wait_status() else 0
-    sub_test_stats.save_sub_stats_csv("stresstest")
 
 
 
