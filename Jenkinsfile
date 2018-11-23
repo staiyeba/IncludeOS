@@ -61,10 +61,3 @@ pipeline {
       }
     }
 }
-
-export INCLUDEOS_SRC=~/IncludeOS
-export INCLUDEOS_PREFIX=~/IncludeOS_install
-export CC=clang-5.0
-export CXX=clang++-5.0
-export num_jobs="-j 8"
-export INCLUDEOS_ENABLE_TEST=OFF
