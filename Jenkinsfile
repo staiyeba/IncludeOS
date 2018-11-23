@@ -1,7 +1,7 @@
 pipeline {
     agent {
       node {
-        label 'os_includeosbuilder'
+        label 'jenkins_includeos'
       }
     }
 
