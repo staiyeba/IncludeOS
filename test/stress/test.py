@@ -6,6 +6,7 @@ import subprocess
 import subprocess32
 import os
 
+sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 1) # line buffering
 includeos_src = os.environ.get('INCLUDEOS_SRC',
                                os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))).split('/test')[0])
 sys.path.insert(0,includeos_src)
@@ -252,7 +253,7 @@ def check_vitals(string):
   sock_mem.close()
   vm.stop()
   wait_for_tw()
-  sub_test_stats.save_sub_stats_csv("stresstest")
+
   return True
 
 # Wait for sockets to exit TIME_WAIT status
@@ -268,6 +269,7 @@ def wait_for_tw():
         if "TIME_WAIT" in line:
             time_wait_proc += 1
     print color.INFO("There are {0} sockets in use, waiting for value to drop below {1}".format(time_wait_proc, socket_limit))
+    sub_test_stats.save_sub_stats_csv("STRESS_TEST")
     time.sleep(7)
 
 # Add custom event-handlers
