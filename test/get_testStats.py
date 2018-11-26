@@ -107,12 +107,13 @@ class subTestStats(statOps):
     def register_sub_stats_gsheet(self, test_name):
         sheet_name = "Includeos-Sub-Test-Stats"
     #    if test_name == "stress":
-        sheet_choice = "sheet2" #if stress test
+        sheet_choice = '2' #if stress test
+        sub_csv_file = self.sub_csv_file
 #        elif test_name == "misc":
 #            sheet_choice = "sheet3"
     #    sub_filename = ""
         #sheet_choice = "sh-sheet3" #if build services
-        update.main(self.sub_csv_file, sheet_name, sheet_choice)
+        update.main(sub_csv_file, sheet_name, sheet_choice)
     #    statOps.register_all_test_stats(data, sub_filename)
     #    self.clean_csv(sub_filename)
 
