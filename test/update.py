@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 import pygsheets
 import sys
 import csv
@@ -82,9 +82,10 @@ def main(in_filename, out_filename, sheet_choice):
                     "Please respond with the name of the Google Sheet.\n")
     wksheet_choice = sheet_choice
     sh = gc.open(sheet_name)
-#    if sheet_choice == "sheet1":
+#    if sheet_choice == '1':
+#        wks = sh.get_worksheet(1)
+#    else:
     wks = sh.sheet1
-    # wks = sh.get_worksheet(1)
     # gc.open(sheet_name).get_worksheet(1)
 #    elif sheet_choice == "sheet2":
 #        wks = sh.sheet2

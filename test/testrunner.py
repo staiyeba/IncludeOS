@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 
 import subprocess
 import sys
@@ -193,9 +193,12 @@ class Test:
         # Start and wait for the process
         self.proc_.communicate()
         cpu_usage = psutil.cpu_percent()
-        memory_usage = None #psutil.virtual_memory()
-        machine = os.uname()[4]#.replace(" ", "_")
+        pid = os.getpid()
+        py = psutil.Process(pid)
+        memory_usage = psutil.virtual_memory()[2] # memory percent
+        # py.memory_info()[0] #/(1024*1024) # memory usage in MB
 
+        machine = os.uname()[4]#.replace(" ", "_")
 
         self.print_duration()
 

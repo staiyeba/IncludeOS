@@ -5,6 +5,7 @@ import time
 import subprocess
 import subprocess32
 import os
+import update
 
 sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 1) # line buffering
 includeos_src = os.environ.get('INCLUDEOS_SRC',

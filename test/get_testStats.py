@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 import csv
 import datetime
 import subprocess
@@ -97,23 +97,25 @@ class subTestStats(statOps):
         dirpath = os.path.dirname(full_path)
         filepath  = '{0}{1}.csv'.format(dirpath,test_name)
     #    print filepath
-        with open("%s" % filepath, "wb+") as self.sub_csv_file:
-            print self.sub_csv_file
-            writer = csv.writer(self.sub_csv_file, delimiter="\t", quoting = csv.QUOTE_NONE)
+        with open("%s" % filepath, "wb+") as sub_csv_file:
+            print sub_csv_file
+            writer = csv.writer(sub_csv_file, delimiter="\t", quoting = csv.QUOTE_NONE)
             writer.writerows(self.sub_stat_results.values())
+        return sub_csv_file
 
 #        subprocess.call(['cat %s' % sub_filename], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
 
     def register_sub_stats_gsheet(self, test_name):
         sheet_name = "Includeos-Sub-Test-Stats"
     #    if test_name == "stress":
-        sheet_choice = '2' #if stress test
-        sub_csv_file = self.sub_csv_file
+        sheet_choice = '1' #if stress test
 #        elif test_name == "misc":
 #            sheet_choice = "sheet3"
     #    sub_filename = ""
         #sheet_choice = "sh-sheet3" #if build services
-        update.main(sub_csv_file, sheet_name, sheet_choice)
+        subcsv_filename = "stressSTRESS_TEST.csv"
+
+        update.main(subcsv_filename, sheet_name, sheet_choice)
     #    statOps.register_all_test_stats(data, sub_filename)
     #    self.clean_csv(sub_filename)
 
