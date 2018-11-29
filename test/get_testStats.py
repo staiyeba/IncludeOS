@@ -39,8 +39,7 @@ class statOps:
             writer.writerows(self.test_results.values())
 
         sheet_name = "Includeos-Sub-Test-Stats"
-        sheet_choice = "sh.sheet1"
-        update.main(filename, sheet_name, sheet_choice)
+        update.main(filename, sheet_name)
 
     # fetch and register test name and time taken by test
     def save_stats_csv(self):
@@ -51,14 +50,14 @@ class statOps:
     def register_final_stats(self, final_time, test_description, skipped, test_status, fail_count): # name # time (end - start)
         sheet_name = "IncludeOS-Test-Stats" #"IncludeOS-testing-stats"
         filename = "TestStats.csv"
-        sheet_choice = "sh.sheet1"
+    #    sheet_choice = "sh.sheet1"
         num_cpus = int(multiprocessing.cpu_count())
         machine = os.uname()[3]#.replace(" ", "_")
         total_test_data = [self.now, final_time[:-1], test_description, skipped, test_status, self.latest_git_tag, "%s" % ''.join(self.last_git_commit), num_cpus, machine, fail_count]
         with open("%s" % filename,'wb+') as csv_file:
             writer = csv.writer(csv_file,lineterminator='\n')
             writer.writerow(total_test_data)
-        update.main(filename, sheet_name, sheet_choice)
+        update.main(filename, sheet_name)
         self.clean_csv(filename)
 
 class subTestStats(statOps):
@@ -95,7 +94,7 @@ class subTestStats(statOps):
         full_path = os.path.realpath(__file__)
     #    print self.sub_stat_results
         dirpath = os.path.dirname(full_path)
-        filepath  = '{0}{1}.csv'.format(dirpath,test_name)
+        filepath  = '{0}/{1}.csv'.format(dirpath,test_name)
     #    print filepath
         with open("%s" % filepath, "wb+") as sub_csv_file:
             print sub_csv_file
@@ -108,14 +107,14 @@ class subTestStats(statOps):
     def register_sub_stats_gsheet(self, test_name):
         sheet_name = "Includeos-Sub-Test-Stats"
     #    if test_name == "stress":
-        sheet_choice = '1' #if stress test
+    #    sheet_choice = '1' #if stress test
 #        elif test_name == "misc":
 #            sheet_choice = "sheet3"
     #    sub_filename = ""
         #sheet_choice = "sh-sheet3" #if build services
-        subcsv_filename = "stressSTRESS_TEST.csv"
-
-        update.main(subcsv_filename, sheet_name, sheet_choice)
+        subcsv_filename = "STRESS_TEST.csv"
+    #    print subcsv_filename
+        update.main(subcsv_filename, sheet_name)
     #    statOps.register_all_test_stats(data, sub_filename)
     #    self.clean_csv(sub_filename)
 

@@ -46,7 +46,7 @@ def new_sheet(choice):
         return None
 
 
-def main(in_filename, out_filename, sheet_choice):
+def main(in_filename, out_filename):
 
     gc = pygsheets.authorize(
         outh_file="client_secret.json",
@@ -62,6 +62,7 @@ def main(in_filename, out_filename, sheet_choice):
 
     if sheet_name is not None:
         gc.create(sheet_name)
+        print sheet_name
     elif out_filename is not None and sheet_name is None:
         sheet_name = out_filename
     else:
@@ -80,7 +81,7 @@ def main(in_filename, out_filename, sheet_choice):
             else:
                 sys.stdout.write(
                     "Please respond with the name of the Google Sheet.\n")
-    wksheet_choice = sheet_choice
+    #wksheet_choice = #sheet_choice
     sh = gc.open(sheet_name)
 #    if sheet_choice == '1':
 #        wks = sh.get_worksheet(1)

@@ -269,7 +269,6 @@ def wait_for_tw():
         if "TIME_WAIT" in line:
             time_wait_proc += 1
     print color.INFO("There are {0} sockets in use, waiting for value to drop below {1}".format(time_wait_proc, socket_limit))
-    sub_test_stats.save_sub_stats_csv("STRESS_TEST")
     time.sleep(7)
 
 # Add custom event-handlers
@@ -280,6 +279,8 @@ vm.on_output("Ready for UDP", UDP)
 vm.on_output("Ready for ICMP", ICMP)
 vm.on_output("Ready for TCP", TCP)
 vm.on_output("Ready to end", check_vitals)
+vm.on_output("Storing stats", sub_test_stats.save_sub_stats_csv("STRESS_TEST"))
+
 
 if len(sys.argv) > 1:
   thread_timeout = int(sys.argv[1])
