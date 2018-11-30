@@ -16,6 +16,7 @@ sys.path.insert(0, "..")
 from vmrunner import vmrunner
 from vmrunner.prettify import color
 from get_testStats import subTestStats
+from get_testStats import statOps
 
 test_name="Stresstest"
 name_tag = "<" + test_name + ">"
@@ -219,6 +220,7 @@ def fire_bursts(func, sub_test_name, lead_out = 3):
     print color.FAIL(sub_test_name + " failed ")
     return False
   print color.PASS(sub_test_name + " succeeded ")
+  # sub_test_stats.save_sub_stats_csv("STRESS_TEST")
   return True
 
 # Trigger several UDP bursts
@@ -253,7 +255,7 @@ def check_vitals(string):
   sock_mem.close()
   vm.stop()
   wait_for_tw()
-
+  sub_test_stats.save_sub_stats_csv("STRESS_TEST")
   return True
 
 # Wait for sockets to exit TIME_WAIT status
@@ -279,7 +281,7 @@ vm.on_output("Ready for UDP", UDP)
 vm.on_output("Ready for ICMP", ICMP)
 vm.on_output("Ready for TCP", TCP)
 vm.on_output("Ready to end", check_vitals)
-vm.on_output("Storing stats", sub_test_stats.save_sub_stats_csv("STRESS_TEST"))
+
 
 
 if len(sys.argv) > 1:

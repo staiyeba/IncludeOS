@@ -85,26 +85,27 @@ class subTestStats(statOps):
 #        print "************** SAVING TO CSV " + test_name + "**************"
 #        print self.sub_stat_results
         self.register_sub_stats(test_name)
-        self.register_sub_stats_gsheet(test_name)
+        subfilename = '{0}.csv'.format(test_name)
+        print subfilename
+        self.register_sub_stats_gsheet(subfilename)
         # clear after save
 
     def register_sub_stats(self, test_name):
         keys = sorted(self.sub_stat_results.keys())
-    #    print test_name
+        print test_name
         full_path = os.path.realpath(__file__)
-    #    print self.sub_stat_results
+        print self.sub_stat_results
         dirpath = os.path.dirname(full_path)
-        filepath  = '{0}/{1}.csv'.format(dirpath,test_name)
-    #    print filepath
+        filepath  = '{0}/{1}.csv'.format(dirpath, test_name)
+        print filepath
         with open("%s" % filepath, "wb+") as sub_csv_file:
             print sub_csv_file
             writer = csv.writer(sub_csv_file, delimiter="\t", quoting = csv.QUOTE_NONE)
             writer.writerows(self.sub_stat_results.values())
-        return sub_csv_file
 
 #        subprocess.call(['cat %s' % sub_filename], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
 
-    def register_sub_stats_gsheet(self, test_name):
+    def register_sub_stats_gsheet(self, sub_filename):
         sheet_name = "Includeos-Sub-Test-Stats"
     #    if test_name == "stress":
     #    sheet_choice = '1' #if stress test
@@ -112,8 +113,8 @@ class subTestStats(statOps):
 #            sheet_choice = "sheet3"
     #    sub_filename = ""
         #sheet_choice = "sh-sheet3" #if build services
-        subcsv_filename = "STRESS_TEST.csv"
-    #    print subcsv_filename
+        subcsv_filename = sub_filename
+        print subcsv_filename
         update.main(subcsv_filename, sheet_name)
     #    statOps.register_all_test_stats(data, sub_filename)
     #    self.clean_csv(sub_filename)
