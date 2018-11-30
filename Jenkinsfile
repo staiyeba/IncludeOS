@@ -31,8 +31,6 @@ pipeline {
                   int buildDuration = (${currentBuild.duration})/1000;
                   echo "TimeTaken to BUILD IncludeOS: $buildDuration ms"
                 }
-
-                sh 'exit 0'
             }
         }
         stage('Integration-Tests') {
