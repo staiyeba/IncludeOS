@@ -21,6 +21,7 @@ pipeline {
     }
 
     stages {
+    try{
         stage('IncludeOS-Build') {
             steps {
                 sh '''
@@ -84,6 +85,17 @@ pipeline {
             }
         }
 
+      } catch(e) {
+          test_ok = false
+          echo e.toString()
+      }
+
+      if(test_ok) {
+        currentBuild.result = "SUCCESS"
+      }
+      else {
+        currentBuild.result = "FAILURE"
+      }
     }
     post {
       success {
