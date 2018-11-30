@@ -33,7 +33,6 @@ pipeline {
                     test_ok = false
                     echo e.toString()
                   }
-                }
 
                   if(test_ok) {
                     currentBuild.result = "SUCCESS"
@@ -41,7 +40,7 @@ pipeline {
                   else {
                     currentBuild.result = "FAILURE"
                   }
-
+                }
                 script {
                   int buildDuration = (${currentBuild.duration})/1000;
                   echo "TimeTaken to BUILD IncludeOS: $buildDuration ms"
