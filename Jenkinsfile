@@ -35,9 +35,9 @@ pipeline {
                 sh 'use $FILE'
               }
             }
-            withCredentials([file(credentialsId: 'oauth2client', variable: 'FILE')]) {
+            withCredentials([file(credentialsId: 'oauth2client', variable: 'FILE2')]) {
               dir('test') {
-                sh 'use $FILE'
+                sh 'use $FILE2'
               }
             }
             steps {
