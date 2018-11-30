@@ -2,11 +2,9 @@ pipeline {
     agent {
       node {
         label 'jenkins_includeos'
-        withCredentials([file(credentialsId: 'solid-feat', variable: 'FILE')]) {
-            sh 'use $FILE'
+        withCredentials([file(credentialsId: 'solid-feat', variable: '')]) {
         }
-        withCredentials([file(credentialsId: 'oauth2client', variable: 'FILE2')]) {
-            sh 'use $FILE2'
+        withCredentials([file(credentialsId: 'oauth2client', variable: '')]) {
         }
       }
     }
@@ -17,6 +15,7 @@ pipeline {
       INCLUDEOS_ENABLE_TEST = "ON"
       INCLUDEOS_ENABLE_LXP = "ON"
       num_jobs = "-j 8"
+
     }
 
     options {
