@@ -28,7 +28,7 @@ pipeline {
                   git pull https://github.com/hioa-cs/IncludeOS.git dev
                   '''
                   try {
-                    ./install.sh -y
+                    bash install.sh -y
                   } catch(e) {
                     test_ok = false
                     echo e.toString()
