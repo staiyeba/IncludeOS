@@ -32,17 +32,19 @@ pipeline {
         }
         stage('Integration-Tests') {
             steps {
-                echo 'Testing..'
-                sh '''
-                chmod u+w ~
-                . ./etc/use_clang_version.sh
-                cd test
                 withCredentials([file(credentialsId: 'solid-feat', variable: 'cilent_secret')]) {
                   set +x
                 }
                 withCredentials([file(credentialsId: 'oauth2client', variable: 'access_token')]) {
                   set +x
                 }
+                
+                echo 'Testing..'
+                sh '''
+                chmod u+w ~
+                . ./etc/use_clang_version.sh
+                cd test
+
                 python testrunner.py -s intrusive stress misc -p 1 -S
                 '''
             }
@@ -78,6 +80,10 @@ pipeline {
 
       failure {
         slackSend (color: '#FF0000', channel: '#devops', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL}) Stats: available on Internal Stats page")
+
+      }
+      aborted {
+        slackSend (color: '#edba02', channel: '#devops', message: "ABORTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL}) Stats: available on Internal Stats page")
       }
     }
 }
