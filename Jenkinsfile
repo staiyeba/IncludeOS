@@ -17,6 +17,7 @@ pipeline {
     options {
         buildDiscarder(logRotator(numToKeepStr: '5'))
         timestamps()
+        timeout(time: 30, unit: 'MINUTES')
     }
 
     stages {
@@ -24,10 +25,12 @@ pipeline {
             steps {
                 sh '''
                 . ./etc/use_clang_version.sh
+                git pull https://github.com/hioa-cs/IncludeOS.git dev
                 ./install.sh -y
                 '''
                 script {
-                  echo "TimeTaken to BUILD IncludeOS: ${currentBuild.duration}ms"
+                  int buildDuration = (${currentBuild.duration})/1000;
+                  echo "TimeTaken to BUILD IncludeOS: $buildDuration ms"
                 }
 
                 sh 'exit 0'
