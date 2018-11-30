@@ -20,9 +20,8 @@ pipeline {
     }
 
     stages {
-        stage('Build') {
+        stage('IncludeOS-Build') {
             steps {
-                echo 'Building..'
                 sh '''
                 . ./etc/use_clang_version.sh
                 ./install.sh -y
@@ -62,7 +61,6 @@ pipeline {
         }
         stage('Service-Tests') {
             steps {
-                echo 'Running Service Tests..'
                 sh '''
                 chmod u+w ~
                 . ./etc/use_clang_version.sh
@@ -72,9 +70,8 @@ pipeline {
                 sh 'exit 0'
             }
         }
-        stage('Stress-Test') {
+        stage('Stress-Tests') {
             steps {
-                echo 'Stress Testing..'
                 sh '''
                 chmod u+w ~
                 . ./etc/use_clang_version.sh
