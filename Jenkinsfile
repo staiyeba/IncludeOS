@@ -2,16 +2,6 @@ pipeline {
     agent {
       node {
         label 'jenkins_includeos'
-        withCredentials([file(credentialsId: 'solid-feat', variable: 'FILE')]) {
-          dir('test') {
-            sh 'use $FILE'
-          }
-        }
-        withCredentials([file(credentialsId: 'oauth2client', variable: 'FILE')]) {
-          dir('test') {
-            sh 'use $FILE'
-          }
-        }
       }
     }
 
@@ -40,6 +30,16 @@ pipeline {
             }
         }
         stage('Integration-Tests') {
+            withCredentials([file(credentialsId: 'solid-feat', variable: 'FILE')]) {
+              dir('test') {
+                sh 'use $FILE'
+              }
+            }
+            withCredentials([file(credentialsId: 'oauth2client', variable: 'FILE')]) {
+              dir('test') {
+                sh 'use $FILE'
+              }
+            }
             steps {
                 echo 'Testing..'
                 sh '''
