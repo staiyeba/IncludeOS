@@ -17,11 +17,9 @@ pipeline {
     options {
         buildDiscarder(logRotator(numToKeepStr: '5'))
         timestamps()
-        timeout(time: 1, unit: 'HOUR')
     }
 
     stages {
-    try{
         stage('IncludeOS-Build') {
             steps {
                 sh '''
@@ -75,27 +73,27 @@ pipeline {
         }
         stage('Stress-Tests') {
             steps {
-                sh '''
-                chmod u+w ~
-                . ./etc/use_clang_version.sh
-                cd test
-                python testrunner.py -s stress -p 1 -S
-                '''
-                sh 'exit 0'
+                script {
+                  sh '''
+                  chmod u+w ~
+                  . ./etc/use_clang_version.sh
+                  cd test
+                  '''
+                  try{
+                    python testrunner.py -s stress -p 1 -S
+                  } catch(e) {
+                    test_ok = false
+                    echo e.toString()
+                  }
+
+                  if(test_ok) {
+                    currentBuild.result = "SUCCESS"
+                  }
+                  else {
+                    currentBuild.result = "FAILURE"
+                  }
             }
         }
-
-      } catch(e) {
-          test_ok = false
-          echo e.toString()
-      }
-
-      if(test_ok) {
-        currentBuild.result = "SUCCESS"
-      }
-      else {
-        currentBuild.result = "FAILURE"
-      }
     }
     post {
       success {
