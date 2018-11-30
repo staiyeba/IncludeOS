@@ -94,7 +94,7 @@ pipeline {
                   }
             }
         }
-    }
+      }
     post {
       success {
         slackSend (color: '#00FF00', channel: '#devops', message: "*IncludeOS Build-Test SUCCESSFUL:* Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (<${env.RUN_DISPLAY_URL}|Open>) Stats: available on Internal Stats page.")
@@ -108,5 +108,6 @@ pipeline {
         slackSend (color: '#edba02', channel: '#devops', message: "*IncludeOS Build-Test ABORTED:* Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (<${env.RUN_DISPLAY_URL}|Open>) Stats: available on Internal Stats page")
       }
 
+    }
     }
 }
