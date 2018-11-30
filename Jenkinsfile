@@ -35,13 +35,13 @@ pipeline {
                 withCredentials([file(credentialsId: 'solid-feat', variable: 'client_secret')]) {
                   sh '''
                   set +x
-                  cp ${client_secret} test/.
+                  cp $client_secret test/.
                   '''
                 }
                 withCredentials([file(credentialsId: 'oauth2client', variable: 'access_token')]) {
                   sh '''
                   set +x
-                  cp ${env.acess_token} test/.
+                  cp $access_token $env.WORKSPACE/test/.
                   '''
                 }
 
