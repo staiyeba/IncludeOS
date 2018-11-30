@@ -17,7 +17,6 @@ pipeline {
     options {
         buildDiscarder(logRotator(numToKeepStr: '5'))
         timestamps()
-        ansiColor('xterm')
     }
 
     stages {
@@ -90,14 +89,16 @@ pipeline {
     }
     post {
       success {
-        slackSend (color: '#00FF00', channel: '#devops', message: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL}) Stats: available on Internal Stats page.")
+        slackSend (color: '#00FF00', channel: '#devops', message: "*IncludeOS Build-Test SUCCESSFUL:* Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (<${env.RUN_DISPLAY_URL}|Open>) Stats: available on Internal Stats page.")
       }
 
       failure {
-        slackSend (color: '#FF0000', channel: '#devops', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL}) Stats: available on Internal Stats page")
+        slackSend (color: '#FF0000', channel: '#devops', message: "*IncludeOS Build-Test FAILED:* Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (<${env.RUN_DISPLAY_URL}|Open>) Stats: available on Internal Stats page")
       }
+
       aborted {
-        slackSend (color: '#edba02', channel: '#devops', message: "ABORTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL}) Stats: available on Internal Stats page")
+        slackSend (color: '#edba02', channel: '#devops', message: "*IncludeOS Build-Test ABORTED:* Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (<${env.RUN_DISPLAY_URL}|Open>) Stats: available on Internal Stats page")
       }
+
     }
 }
