@@ -1,7 +1,7 @@
 pipeline {
     agent {
       node {
-        label 'os_includeosbuilder'
+        label 'jenkins_includeos'
       }
     }
 
@@ -24,28 +24,41 @@ pipeline {
                 echo 'Building..'
                 sh '''
                 . ./etc/use_clang_version.sh
+                git pull https://github.com/hioa-cs/IncludeOS.git dev
                 ./install.sh -y
                 '''
             }
         }
-        stage('Stat-Configs') {
-            steps {
-                echo 'configuring ..'
-                sh '''
-                env
-                cp ~/config/* $(pwd)/test/
-                ./build_x86_64/unittests/unittests || exit 1
-                '''
-            }
-        }
-        stage('Test') {
+        stage('Integration-Tests') {
             steps {
                 echo 'Testing..'
                 sh '''
                 chmod u+w ~
                 . ./etc/use_clang_version.sh
                 cd test
-                python testrunner.py -s intrusive -p 1
+                python testrunner.py -s intrusive stress misc -p 1
+                '''
+            }
+        }
+        stage('Service-Tests') {
+            steps {
+                echo 'Testing..'
+                sh '''
+                chmod u+w ~
+                . ./etc/use_clang_version.sh
+                cd test
+                python testrunner.py -t misc -p 1
+                '''
+            }
+        }
+        stage('Stress-Test') {
+            steps {
+                echo 'Testing..'
+                sh '''
+                chmod u+w ~
+                . ./etc/use_clang_version.sh
+                cd test
+                python testrunner.py -s stress -p 1
                 '''
             }
         }
@@ -53,18 +66,11 @@ pipeline {
     }
     post {
       success {
-        slackSend (color: '#00FF00', channel: '#devops', message: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+        slackSend (color: '#00FF00', channel: '#devops', message: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL}) Stats: available on Internal Stats page.")
       }
 
       failure {
-        slackSend (color: '#FF0000', channel: '#devops', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+        slackSend (color: '#FF0000', channel: '#devops', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL}) Stats: available on Internal Stats page")
       }
     }
 }
-
-export INCLUDEOS_SRC=~/IncludeOS
-export INCLUDEOS_PREFIX=~/IncludeOS_install
-export CC=clang-5.0
-export CXX=clang++-5.0
-export num_jobs="-j 8"
-export INCLUDEOS_ENABLE_TEST=OFF
