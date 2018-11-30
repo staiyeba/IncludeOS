@@ -27,7 +27,7 @@ pipeline {
                 ./install.sh -y
                 '''
                 script {
-                  echo "TimeTaken: ${currentBuild.duration}"
+                  echo "TimeTaken to BUILD IncludeOS: ${currentBuild.duration}ms"
                 }
 
                 sh 'exit 0'
@@ -48,7 +48,6 @@ pipeline {
                   '''
                 }
 
-                echo 'Testing..'
                 sh '''
                 chmod u+w ~
                 . ./etc/use_clang_version.sh
