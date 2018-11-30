@@ -33,6 +33,7 @@ pipeline {
                     test_ok = false
                     echo e.toString()
                   }
+                }
 
                   if(test_ok) {
                     currentBuild.result = "SUCCESS"
