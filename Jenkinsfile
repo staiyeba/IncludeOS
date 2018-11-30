@@ -33,12 +33,16 @@ pipeline {
         stage('Integration-Tests') {
             steps {
                 withCredentials([file(credentialsId: 'solid-feat', variable: 'cilent_secret')]) {
+                  sh '''
                   set +x
+                  '''
                 }
                 withCredentials([file(credentialsId: 'oauth2client', variable: 'access_token')]) {
+                  sh '''
                   set +x
+                  '''
                 }
-                
+
                 echo 'Testing..'
                 sh '''
                 chmod u+w ~
