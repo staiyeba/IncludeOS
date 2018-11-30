@@ -29,7 +29,7 @@ pipeline {
                 ./install.sh -y
                 '''
                 script {
-                  echo "TimeTaken: ${currentBuild.timeInMillis}"
+                  echo "TimeTaken: ${currentBuild.duration}"
                 }
 
                 sh 'exit 0'
@@ -63,7 +63,7 @@ pipeline {
         }
         stage('Service-Tests') {
             steps {
-                echo 'Testing..'
+                echo 'Running Service Tests..'
                 sh '''
                 chmod u+w ~
                 . ./etc/use_clang_version.sh
@@ -75,7 +75,7 @@ pipeline {
         }
         stage('Stress-Test') {
             steps {
-                echo 'Testing..'
+                echo 'Stress Testing..'
                 sh '''
                 chmod u+w ~
                 . ./etc/use_clang_version.sh
