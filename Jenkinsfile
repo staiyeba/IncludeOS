@@ -1,7 +1,7 @@
 pipeline {
     agent {
       node {
-        label 'jenkins_includeos'
+        label 'vcloud_includeos'
       }
     }
 
