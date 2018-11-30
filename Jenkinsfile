@@ -26,7 +26,7 @@ pipeline {
                   . ./etc/use_clang_version.sh
                   git pull https://github.com/hioa-cs/IncludeOS.git dev
                   ./install.sh -y
-                  int buildDuration = (${currentBuild.duration})/1000
+                  int buildDuration = ${currentBuild.duration}
                   echo "TimeTaken to BUILD IncludeOS: $buildDuration ms"
                 '''
             }
