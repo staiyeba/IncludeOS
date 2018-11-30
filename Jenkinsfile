@@ -22,15 +22,15 @@ pipeline {
     stages {
         stage('IncludeOS-Build') {
             steps {
-                  sh '''
-                  . ./etc/use_clang_version.sh
-                  git pull https://github.com/hioa-cs/IncludeOS.git dev
-                  ./install.sh -y
-                  '''
+                sh '''
+                . ./etc/use_clang_version.sh
+                ./install.sh -y
+                '''
                 script {
-                  int buildDuration = ${currentBuild.duration}
-                  echo "TimeTaken to BUILD IncludeOS: $buildDuration ms"
+                  echo "TimeTaken to BUILD IncludeOS: ${currentBuild.duration}ms"
                 }
+
+                sh 'exit 0'
             }
         }
         stage('Integration-Tests') {
@@ -47,53 +47,53 @@ pipeline {
                   cp $access_token test/.
                   '''
                 }
-                script {
-                  sh '''
-                  chmod u+w ~
-                  . ./etc/use_clang_version.sh
-                  cd test
-                  python testrunner.py -s intrusive stress misc -p 1 -S
-                  '''
-                }
+
+                sh '''
+                chmod u+w ~
+                . ./etc/use_clang_version.sh
+                cd test
+
+                python testrunner.py -s intrusive stress misc -p 1 -S
+                '''
+                sh 'exit 0'
             }
         }
         stage('Service-Tests') {
             steps {
-                script {
-                  sh '''
-                  chmod u+w ~
-                  . ./etc/use_clang_version.sh
-                  cd test
-                  python testrunner.py -t misc -p 1 -S
-                  '''
-                }
+                sh '''
+                chmod u+w ~
+                . ./etc/use_clang_version.sh
+                cd test
+                python testrunner.py -t misc -p 1 -S
+                '''
+                sh 'exit 0'
             }
         }
         stage('Stress-Tests') {
             steps {
-                script {
-                  sh '''
-                  chmod u+w ~
-                  . ./etc/use_clang_version.sh
-                  cd test
-                  python testrunner.py -s stress -p 1 -S
-                  '''
-                }
+                sh '''
+                chmod u+w ~
+                . ./etc/use_clang_version.sh
+                cd test
+                python testrunner.py -s stress -p 1 -S
+                '''
+                sh 'exit 0'
             }
         }
+
+    }
+    post {
+      success {
+        slackSend (color: '#00FF00', channel: '#devops', message: "*IncludeOS Build-Test SUCCESSFUL:* Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (<${env.RUN_DISPLAY_URL}|Open>) Stats: available on Internal Stats page.")
       }
-      post {
-        success {
-          slackSend (color: '#00FF00', channel: '#devops', message: "*IncludeOS Build-Test SUCCESSFUL:* Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (<${env.RUN_DISPLAY_URL}|Open>) Stats: available on Internal Stats page.")
-        }
 
-        failure {
-          slackSend (color: '#FF0000', channel: '#devops', message: "*IncludeOS Build-Test FAILED:* Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (<${env.RUN_DISPLAY_URL}|Open>) Stats: available on Internal Stats page")
-        }
-
-        aborted {
-          slackSend (color: '#edba02', channel: '#devops', message: "*IncludeOS Build-Test ABORTED:* Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (<${env.RUN_DISPLAY_URL}|Open>) Stats: available on Internal Stats page")
-        }
-
+      failure {
+        slackSend (color: '#FF0000', channel: '#devops', message: "*IncludeOS Build-Test FAILED:* Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (<${env.RUN_DISPLAY_URL}|Open>) Stats: available on Internal Stats page")
       }
+
+      aborted {
+        slackSend (color: '#edba02', channel: '#devops', message: "*IncludeOS Build-Test ABORTED:* Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (<${env.RUN_DISPLAY_URL}|Open>) Stats: available on Internal Stats page")
+      }
+
+    }
 }
