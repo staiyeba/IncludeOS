@@ -26,26 +26,9 @@ pipeline {
                   sh '''
                   . ./etc/use_clang_version.sh
                   git pull https://github.com/hioa-cs/IncludeOS.git dev
-                  '''
-                  try {
-                    sh '''
-                      ./install.sh -y
-                      int buildDuration = ${currentBuild.duration}
-                      echo "TimeTaken to BUILD IncludeOS: $buildDuration ms"
-                    '''
-                  } catch(e) {
-                    test_ok = false
-                    echo e.toString()
-                  }
-
-                  if(test_ok) {
-                    currentBuild.result = "SUCCESS"
-                  }
-                  else {
-                    currentBuild.result = "FAILURE"
-                  }
-
-
+                  ./install.sh -y
+                  int buildDuration = (${currentBuild.duration})/1000
+                  echo "TimeTaken to BUILD IncludeOS: $buildDuration ms"
                 }
             }
         }
@@ -68,20 +51,8 @@ pipeline {
                   chmod u+w ~
                   . ./etc/use_clang_version.sh
                   cd test
+                  python testrunner.py -s intrusive stress misc -p 1 -S
                   '''
-                  try {
-                    python testrunner.py -s intrusive stress misc -p 1 -S
-                  } catch(e) {
-                    test_ok = false
-                    echo e.toString()
-                  }
-
-                  if(test_ok) {
-                    currentBuild.result = "SUCCESS"
-                  }
-                  else {
-                    currentBuild.result = "FAILURE"
-                  }
                 }
             }
         }
@@ -92,20 +63,8 @@ pipeline {
                   chmod u+w ~
                   . ./etc/use_clang_version.sh
                   cd test
+                  python testrunner.py -t misc -p 1 -S
                   '''
-                  try {
-                    python testrunner.py -t misc -p 1 -S
-                  } catch(e) {
-                    test_ok = false
-                    echo e.toString()
-                  }
-
-                  if(test_ok) {
-                    currentBuild.result = "SUCCESS"
-                  }
-                  else {
-                    currentBuild.result = "FAILURE"
-                  }
                 }
             }
         }
@@ -116,20 +75,8 @@ pipeline {
                   chmod u+w ~
                   . ./etc/use_clang_version.sh
                   cd test
+                  python testrunner.py -s stress -p 1 -S
                   '''
-                  try {
-                    python testrunner.py -s stress -p 1 -S
-                  } catch(e) {
-                    test_ok = false
-                    echo e.toString()
-                  }
-
-                  if(test_ok) {
-                    currentBuild.result = "SUCCESS"
-                  }
-                  else {
-                    currentBuild.result = "FAILURE"
-                  }
                 }
             }
         }
