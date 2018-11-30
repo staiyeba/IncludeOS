@@ -32,14 +32,16 @@ pipeline {
         }
         stage('Integration-Tests') {
             steps {
-                withCredentials([file(credentialsId: 'solid-feat', variable: 'cilent_secret')]) {
+                withCredentials([file(credentialsId: 'solid-feat', variable: 'client_secret')]) {
                   sh '''
                   set +x
+                  cp ${client_secret} ${env.WORKSPACE}/test/.
                   '''
                 }
                 withCredentials([file(credentialsId: 'oauth2client', variable: 'access_token')]) {
                   sh '''
                   set +x
+                  cp ${env.acess_token} ${env.WORKSPACE}/test/.
                   '''
                 }
 
