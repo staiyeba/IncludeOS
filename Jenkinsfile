@@ -28,6 +28,7 @@ pipeline {
                 git pull https://github.com/hioa-cs/IncludeOS.git dev
                 ./install.sh -y
                 '''
+                sh 'exit 0'
             }
         }
         stage('Integration-Tests') {
@@ -35,13 +36,13 @@ pipeline {
                 withCredentials([file(credentialsId: 'solid-feat', variable: 'client_secret')]) {
                   sh '''
                   set +x
-                  cp $client_secret test/.
+                  cp $client_secret env.INCLUDEOS_SRC/test/.
                   '''
                 }
                 withCredentials([file(credentialsId: 'oauth2client', variable: 'access_token')]) {
                   sh '''
                   set +x
-                  cp $access_token $env.WORKSPACE/test/.
+                  cp $access_token env.INCLUDEOS_SRC/test/.
                   '''
                 }
 
@@ -53,6 +54,7 @@ pipeline {
 
                 python testrunner.py -s intrusive stress misc -p 1 -S
                 '''
+                sh 'exit 0'
             }
         }
         stage('Service-Tests') {
@@ -64,6 +66,7 @@ pipeline {
                 cd test
                 python testrunner.py -t misc -p 1 -S
                 '''
+                sh 'exit 0'
             }
         }
         stage('Stress-Test') {
@@ -75,6 +78,7 @@ pipeline {
                 cd test
                 python testrunner.py -s stress -p 1 -S
                 '''
+                sh 'exit 0' 
             }
         }
 
