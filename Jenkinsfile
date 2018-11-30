@@ -28,6 +28,10 @@ pipeline {
                 git pull https://github.com/hioa-cs/IncludeOS.git dev
                 ./install.sh -y
                 '''
+                script {
+                  echo "TimeTaken: ${currentBuild.timeInMillis}"
+                }
+
                 sh 'exit 0'
             }
         }
@@ -36,13 +40,13 @@ pipeline {
                 withCredentials([file(credentialsId: 'solid-feat', variable: 'client_secret')]) {
                   sh '''
                   set +x
-                  cp $client_secret env.INCLUDEOS_SRC/test/.
+                  cp $client_secret test/.
                   '''
                 }
                 withCredentials([file(credentialsId: 'oauth2client', variable: 'access_token')]) {
                   sh '''
                   set +x
-                  cp $access_token env.INCLUDEOS_SRC/test/.
+                  cp $access_token test/.
                   '''
                 }
 
@@ -78,7 +82,7 @@ pipeline {
                 cd test
                 python testrunner.py -s stress -p 1 -S
                 '''
-                sh 'exit 0' 
+                sh 'exit 0'
             }
         }
 
