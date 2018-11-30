@@ -49,26 +49,49 @@ pipeline {
                   cp $access_token test/.
                   '''
                 }
+                script {
+                  sh '''
+                  chmod u+w ~
+                  . ./etc/use_clang_version.sh
+                  cd test
+                  '''
+                  try {
+                    python testrunner.py -s intrusive stress misc -p 1 -S
+                  } catch(e) {
+                    test_ok = false
+                    echo e.toString()
+                  }
 
-                sh '''
-                chmod u+w ~
-                . ./etc/use_clang_version.sh
-                cd test
-
-                python testrunner.py -s intrusive stress misc -p 1 -S
-                '''
-                sh 'exit 0'
+                  if(test_ok) {
+                    currentBuild.result = "SUCCESS"
+                  }
+                  else {
+                    currentBuild.result = "FAILURE"
+                  }
             }
         }
         stage('Service-Tests') {
             steps {
-                sh '''
-                chmod u+w ~
-                . ./etc/use_clang_version.sh
-                cd test
-                python testrunner.py -t misc -p 1 -S
-                '''
-                sh 'exit 0'
+                script {
+                  sh '''
+                  chmod u+w ~
+                  . ./etc/use_clang_version.sh
+                  cd test
+                  '''
+                  try {
+                    python testrunner.py -t misc -p 1 -S
+                  } catch(e) {
+                    test_ok = false
+                    echo e.toString()
+                  }
+
+                  if(test_ok) {
+                    currentBuild.result = "SUCCESS"
+                  }
+                  else {
+                    currentBuild.result = "FAILURE"
+                  }
+                }
             }
         }
         stage('Stress-Tests') {
@@ -79,7 +102,7 @@ pipeline {
                   . ./etc/use_clang_version.sh
                   cd test
                   '''
-                  try{
+                  try {
                     python testrunner.py -s stress -p 1 -S
                   } catch(e) {
                     test_ok = false
