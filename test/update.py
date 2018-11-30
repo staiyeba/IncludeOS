@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 import pygsheets
 import sys
 import csv
@@ -46,12 +46,11 @@ def new_sheet(choice):
         return None
 
 
-def main(in_filename, out_filename, sheet_choice):
+def main(in_filename, out_filename):
 
     gc = pygsheets.authorize(
         outh_file="client_secret.json",
         outh_nonlocal=True)
-
 
     all_sheets = gc.list_ssheets()
     all_names = [sheet['name'] for sheet in all_sheets]
@@ -63,6 +62,7 @@ def main(in_filename, out_filename, sheet_choice):
 
     if sheet_name is not None:
         gc.create(sheet_name)
+        print sheet_name
     elif out_filename is not None and sheet_name is None:
         sheet_name = out_filename
     else:
@@ -81,10 +81,19 @@ def main(in_filename, out_filename, sheet_choice):
             else:
                 sys.stdout.write(
                     "Please respond with the name of the Google Sheet.\n")
-    wksheet_choice = sheet_choice
+    #wksheet_choice = #sheet_choice
     sh = gc.open(sheet_name)
-    wks = sh.sheet1 # wksheet_choice #
-#    print sh.Worksheet("Stress-test").title
+#    if sheet_choice == '1':
+#        wks = sh.get_worksheet(1)
+#    else:
+    wks = sh.sheet1
+    # gc.open(sheet_name).get_worksheet(1)
+#    elif sheet_choice == "sheet2":
+#        wks = sh.sheet2
+#    elif sheet_choice == "sheet3":
+#        wks = sh.sheet3
+#    else:
+#        print "sheetname not found"
 
 
     read_from_file = read_csv(in_filename)

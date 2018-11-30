@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 
 import subprocess
 import sys
@@ -7,7 +7,7 @@ import argparse
 import json
 import time
 import multiprocessing  # To figure out number of cpus
-#import junit_xml as jx
+import junit_xml as jx
 import codecs
 import psutil
 import re
@@ -28,7 +28,7 @@ startdir = os.getcwd()
 test_categories = ['fs', 'hw', 'kernel', 'mod', 'net', 'performance', 'plugin', 'posix', 'stl', 'util']
 test_types = ['integration', 'stress', 'unit', 'misc', 'linux']
 test_results = statOps()
-sub_test_stats = subTestStats()
+sub_tests = subTestStats()
 
 """
 Script used for running all the valid tests in the terminal.
@@ -61,6 +61,9 @@ parser.add_argument("-j", "--junit-xml", dest="junit", action="store_true",
 parser.add_argument("-p", "--parallel-tests", dest="parallel", default=0, type=int,
                     help="How many tests to run at once in parallell, \
                     overrides cpu count which is default")
+
+parser.add_argument("-S", "--save-stats", dest="stats", action="store_true",
+                    help="Produces csv stat results")
 
 args = parser.parse_args()
 
@@ -193,9 +196,12 @@ class Test:
         # Start and wait for the process
         self.proc_.communicate()
         cpu_usage = psutil.cpu_percent()
-        memory_usage = None #psutil.virtual_memory()
-        machine = os.uname()[4]#.replace(" ", "_")
+        pid = os.getpid()
+        py = psutil.Process(pid)
+        memory_usage = psutil.virtual_memory()[2] # memory percent
+        # py.memory_info()[0] #/(1024*1024) # memory usage in MB
 
+        machine = os.uname()[4]#.replace(" ", "_")
 
         self.print_duration()
 
@@ -217,7 +223,9 @@ class Test:
             print pretty.DATA(self.output_[1].encode('ascii', 'ignore').decode('ascii'))
             test_status = "FAIL"
 
-        test_results.append_stat_to_list(self.path_,self.test_time, test_status, cpu_usage, memory_usage, machine)
+        # Save stats
+        if args.stats:
+            test_results.append_stat_to_list(self.path_,self.test_time, test_status, cpu_usage, memory_usage, machine)
 
         return self.proc_.returncode
 
@@ -574,14 +582,15 @@ def main():
         print pretty.FAIL(str(status) + " / " + str(test_count) + " tests failed ")
         final_test_status = "FAIL"
 
-
-    test_results.save_stats_csv() # should only be called after all tests are over.
+    # Save stats
+    if args.stats:
+        test_results.save_stats_csv() # should only be called after all tests are over.
     # test time
-    end_time = time_now()
-    final_duration = "{0:5.0f}s".format(end_time - start_time)
-    #final_time = statOps("test", final_duration, final_test_status)
-    fail_count = status
-    test_results.register_final_stats(final_duration, test_description, skipped,  final_test_status, fail_count)
+        end_time = time_now()
+        final_duration = "{0:5.0f}s".format(end_time - start_time)
+        #final_time = statOps("test", final_duration, final_test_status)
+        fail_count = status
+        test_results.register_final_stats(final_duration, test_description, skipped,  final_test_status, fail_count)
 
     # Create Junit output
     if args.junit:

@@ -6,6 +6,7 @@ import subprocess
 import subprocess32
 import os
 
+sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 1) # line buffering
 includeos_src = os.environ.get('INCLUDEOS_SRC',
                                os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))).split('/test')[0])
 sys.path.insert(0,includeos_src)
@@ -15,11 +16,12 @@ sys.path.insert(0, "..")
 from vmrunner import vmrunner
 from vmrunner.prettify import color
 from get_testStats import subTestStats
+from get_testStats import statOps
 
 test_name="Stresstest"
 name_tag = "<" + test_name + ">"
 sub_test_stats = subTestStats()
-
+iter_count = 0
 # We assume malloc will increase / decrease heap pagewise
 PAGE_SIZE = 4096
 
@@ -63,7 +65,7 @@ def get_mem(sub_test_tag):
 
   print color.INFO(name_tag),"Current VM memory usage reported as ", received
   print color.INFO(sub_test_tag),"Current VM memory usage reported as ", received
-  sub_test_stats.append_sub_stats(test_name, sub_test_tag, received)
+  sub_test_stats.append_sub_stats(test_name, sub_test_tag, received, iter_count)
 
   return int(received)
 
@@ -144,13 +146,10 @@ def ARP_burst(burst_size = BURST_SIZE, burst_interval = BURST_INTERVAL):
   time.sleep(burst_interval)
   return get_mem(sub_test_tag)
 
-
-
 def heap_ok(line):
     global heap_verified
     heap_verified = True
     print color.INFO("Stresstest::heap_ok"), "VM reports heap is increasing and decreasing as expected"
-
 
 def crash_test(string):
   print color.INFO("Opening persistent TCP connection for diagnostics")
@@ -221,8 +220,8 @@ def fire_bursts(func, sub_test_name, lead_out = 3):
     print color.FAIL(sub_test_name + " failed ")
     return False
   print color.PASS(sub_test_name + " succeeded ")
+  # sub_test_stats.save_sub_stats_csv("STRESS_TEST")
   return True
-
 
 # Trigger several UDP bursts
 def ARP(string):
@@ -256,6 +255,7 @@ def check_vitals(string):
   sock_mem.close()
   vm.stop()
   wait_for_tw()
+  sub_test_stats.save_sub_stats_csv("STRESS_TEST")
   return True
 
 # Wait for sockets to exit TIME_WAIT status
@@ -281,6 +281,8 @@ vm.on_output("Ready for UDP", UDP)
 vm.on_output("Ready for ICMP", ICMP)
 vm.on_output("Ready for TCP", TCP)
 vm.on_output("Ready to end", check_vitals)
+
+
 
 if len(sys.argv) > 1:
   thread_timeout = int(sys.argv[1])
