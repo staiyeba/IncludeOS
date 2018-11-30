@@ -28,7 +28,11 @@ pipeline {
                   git pull https://github.com/hioa-cs/IncludeOS.git dev
                   '''
                   try {
-                    bash install.sh -y
+                    sh '''
+                      bash install.sh -y
+                      int buildDuration = (${currentBuild.duration})/1000;
+                      echo "TimeTaken to BUILD IncludeOS: $buildDuration ms"
+                    '''
                   } catch(e) {
                     test_ok = false
                     echo e.toString()
@@ -40,10 +44,8 @@ pipeline {
                   else {
                     currentBuild.result = "FAILURE"
                   }
-                }
-                script {
-                  int buildDuration = (${currentBuild.duration})/1000;
-                  echo "TimeTaken to BUILD IncludeOS: $buildDuration ms"
+
+
                 }
             }
         }
