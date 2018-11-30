@@ -22,14 +22,13 @@ pipeline {
     stages {
         stage('IncludeOS-Build') {
             steps {
-                script {
                   sh '''
                   . ./etc/use_clang_version.sh
                   git pull https://github.com/hioa-cs/IncludeOS.git dev
                   ./install.sh -y
                   int buildDuration = (${currentBuild.duration})/1000
                   echo "TimeTaken to BUILD IncludeOS: $buildDuration ms"
-                }
+                '''
             }
         }
         stage('Integration-Tests') {
