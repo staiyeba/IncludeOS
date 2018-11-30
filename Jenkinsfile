@@ -2,6 +2,16 @@ pipeline {
     agent {
       node {
         label 'jenkins_includeos'
+        withCredentials([file(credentialsId: 'solid-feat', variable: 'FILE')]) {
+          dir('test') {
+            sh 'use $FILE'
+          }
+        }
+        withCredentials([file(credentialsId: 'oauth2client', variable: 'FILE')]) {
+          dir('test') {
+            sh 'use $FILE'
+          }
+        }
       }
     }
 
@@ -36,7 +46,7 @@ pipeline {
                 chmod u+w ~
                 . ./etc/use_clang_version.sh
                 cd test
-                python testrunner.py -s intrusive stress misc -p 1
+                python testrunner.py -s intrusive stress misc -p 1 -S
                 '''
             }
         }
@@ -47,7 +57,7 @@ pipeline {
                 chmod u+w ~
                 . ./etc/use_clang_version.sh
                 cd test
-                python testrunner.py -t misc -p 1
+                python testrunner.py -t misc -p 1 -S
                 '''
             }
         }
@@ -58,7 +68,7 @@ pipeline {
                 chmod u+w ~
                 . ./etc/use_clang_version.sh
                 cd test
-                python testrunner.py -s stress -p 1
+                python testrunner.py -s stress -p 1 -S
                 '''
             }
         }
