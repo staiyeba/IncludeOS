@@ -2,10 +2,6 @@ pipeline {
     agent {
       node {
         label 'jenkins_includeos'
-        withCredentials([file(credentialsId: 'solid-feat', variable: '')]) {
-        }
-        withCredentials([file(credentialsId: 'oauth2client', variable: '')]) {
-        }
       }
     }
 
@@ -41,6 +37,12 @@ pipeline {
                 chmod u+w ~
                 . ./etc/use_clang_version.sh
                 cd test
+                withCredentials([file(credentialsId: 'solid-feat', variable: 'cilent_secret')]) {
+                  set +x
+                }
+                withCredentials([file(credentialsId: 'oauth2client', variable: 'access_token')]) {
+                  set +x
+                }
                 python testrunner.py -s intrusive stress misc -p 1 -S
                 '''
             }
