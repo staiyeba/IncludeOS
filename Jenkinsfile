@@ -80,6 +80,17 @@ pipeline {
                 sh 'exit 0'
             }
         }
+	stage('Intrusive-Tests') {
+            steps {
+                sh '''
+                chmod u+w ~
+                . ./etc/use_clang_version.sh
+                cd test
+                python testrunner.py -s intrusive -p 1 -S
+                '''
+                sh 'exit 0'
+            }
+        }
 
     }
     post {
