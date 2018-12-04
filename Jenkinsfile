@@ -58,9 +58,10 @@ pipeline {
                 cd test
 
                 python testrunner.py -s intrusive stress misc -p 1 -S
+                ${currentBuild.result} = 'SUCCESS'
               '''
 
-              currentBuild.result = 'SUCCESS'
+
 
               sh 'exit 0'
             }
