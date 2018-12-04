@@ -30,7 +30,7 @@ pipeline {
                 ./install.sh -y
                 '''
                 script {
-                  int buildDuration = (${currentBuild.duration})/1000;
+                  int buildDuration = ${currentBuild.duration}
                   echo "TimeTaken to BUILD IncludeOS: $buildDuration ms"
                 }
 
