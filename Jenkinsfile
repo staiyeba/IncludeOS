@@ -1,7 +1,7 @@
 pipeline {
     agent {
       node {
-        label 'jenkins_includeos'
+        label 'os_includeosbuilder'
       }
     }
 
@@ -10,7 +10,7 @@ pipeline {
       INCLUDEOS_PREFIX = "${env.WORKSPACE + '/IncludeOS_install'}"
       INCLUDEOS_ENABLE_TEST = "ON"
       INCLUDEOS_ENABLE_LXP = "ON"
-      num_jobs = "-j 8"
+      num_jobs = "-j 4"
 
     }
 
