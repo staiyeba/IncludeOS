@@ -59,8 +59,10 @@ pipeline {
 
                 python testrunner.py -s intrusive stress misc -p 1 -S
               '''
+
+              currentBuild.result = 'SUCCESS'
+
               sh 'exit 0'
-              propagate: false
             }
         }
 
