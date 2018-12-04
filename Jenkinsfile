@@ -18,7 +18,7 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '5'))
         timestamps()
         timeout(time: 30, unit: 'MINUTES')
-	ansiColor('xterm')
+	      ansiColor('xterm')
     }
 
     stages {
@@ -30,72 +30,78 @@ pipeline {
                 ./install.sh -y
                 '''
                 script {
-			echo "TimeTaken to BUILD IncludeOS: ${currentBuild.duration}ms"
+			             echo "TimeTaken to BUILD IncludeOS: ${currentBuild.duration}ms"
                 }
 
                 sh 'exit 0'
             }
         }
+
         stage('Integration-Tests') {
             steps {
-                withCredentials([file(credentialsId: 'solid-feat', variable: 'client_secret')]) {
+              withCredentials([file(credentialsId: 'solid-feat', variable: 'client_secret')]) {
                   sh '''
-                  set +x
-                  cp $client_secret test/.
-                  '''
-                }
-                withCredentials([file(credentialsId: 'oauth2client', variable: 'access_token')]) {
+                    set +x
+                    cp $client_secret test/.
+                    '''
+              }
+              withCredentials([file(credentialsId: 'oauth2client', variable: 'access_token')]) {
                   sh '''
-                  set +x
-                  cp $access_token test/.
+                    set +x
+                    cp $access_token test/.
                   '''
-                }
+              }
 
-                sh '''
+              sh '''
                 chmod u+w ~
                 . ./etc/use_clang_version.sh
                 cd test
 
                 python testrunner.py -s intrusive stress misc -p 1 -S
-                '''
-                sh 'exit 0'
+              '''
+              sh 'exit 0'
+              propagate: false
             }
         }
+
         stage('Service-Tests') {
             steps {
                 sh '''
-                chmod u+w ~
-                . ./etc/use_clang_version.sh
-                cd test
-                python testrunner.py -t misc -p 1 -S
+                  chmod u+w ~
+                  . ./etc/use_clang_version.sh
+                  cd test
+                  python testrunner.py -t misc -p 1 -S
                 '''
                 sh 'exit 0'
-            }
+                }
         }
+
         stage('Stress-Tests') {
             steps {
                 sh '''
-                chmod u+w ~
-                . ./etc/use_clang_version.sh
-                cd test
-                python testrunner.py -s stress -p 1 -S
+                  chmod u+w ~
+                  . ./etc/use_clang_version.sh
+                  cd test
+                  python testrunner.py -s stress -p 1 -S
                 '''
                 sh 'exit 0'
             }
         }
-	stage('Intrusive-Tests') {
+
+        stage('Intrusive-Tests') {
             steps {
                 sh '''
-                chmod u+w ~
-                . ./etc/use_clang_version.sh
-                cd test
-                python testrunner.py -s intrusive -p 1 -S
+                  chmod u+w ~
+                  . ./etc/use_clang_version.sh
+                  cd test
+                  python testrunner.py -s intrusive -p 1 -S
                 '''
                 sh 'exit 0'
             }
         }
 
     }
+
     post {
       success {
         slackSend (color: '#00FF00', channel: '#devops', message: "*IncludeOS Build-Test SUCCESSFUL:* Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (<${env.BUILD_URL}|Open>) Stats: available on Internal Stats page.")
