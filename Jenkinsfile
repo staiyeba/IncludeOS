@@ -1,7 +1,7 @@
 pipeline {
     agent {
       node {
-        label 'os_includeosbuilder'
+        label 'jenkins_includeos'
       }
     }
 
@@ -25,9 +25,9 @@ pipeline {
         stage('IncludeOS-Build') {
             steps {
                 sh '''
-                . ./etc/use_clang_version.sh
-                git pull https://github.com/hioa-cs/IncludeOS.git dev
-                ./install.sh -y
+                  . ./etc/use_clang_version.sh
+                  git pull https://github.com/hioa-cs/IncludeOS.git dev
+                  ./install.sh -y
                 '''
                 script {
 			             echo "TimeTaken to BUILD IncludeOS: ${currentBuild.duration}ms"
@@ -43,7 +43,7 @@ pipeline {
                   sh '''
                     set +x
                     cp $client_secret test/.
-                    '''
+                  '''
               }
               withCredentials([file(credentialsId: 'oauth2client', variable: 'access_token')]) {
                   sh '''
@@ -58,12 +58,9 @@ pipeline {
                 cd test
 
                 python testrunner.py -s intrusive stress misc -p 1 -S
-                
               '''
-
-
-
               sh 'exit 0'
+
             }
         }
 
