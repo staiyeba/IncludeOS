@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 import sys
 import os
 import subprocess
@@ -17,7 +17,7 @@ vm = vmrunner.vms[0]
 
 def cleanup():
     # Call the cleanup script - let python do the printing to get it synced
-    print subprocess.check_output(["./fat32_disk.sh", "clean"])
+    print(subprocess.check_output(["./fat32_disk.sh", "clean"]))
 
 # Setup disk
 subprocess32.call(["./fat32_disk.sh"], shell=True, timeout = thread_timeout)

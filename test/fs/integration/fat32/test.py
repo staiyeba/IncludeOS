@@ -20,7 +20,7 @@ def cleanup():
     print(subprocess.check_output(["./fat32_disk.sh", "clean"]))
 
 # Setup disk
-subprocess.call(["./fat32_disk.sh"], shell=True)
+subprocess.check_output(["./fat32_disk.sh"], shell=True)
 
 # Clean up on exit
 vm.on_exit(cleanup)
