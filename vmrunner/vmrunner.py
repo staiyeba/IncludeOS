@@ -1,7 +1,7 @@
 import os
 import sys
 import subprocess
-import thread
+import _thread
 import threading
 import time
 import re
