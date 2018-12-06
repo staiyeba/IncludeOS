@@ -22,9 +22,21 @@ skip_tests="demo_service"
 path_to_examples = os.path.join(includeos_src,'examples')
 path_to_starbase = os.path.join(includeos_src,'lib/uplink')
 
+def starbase():
+    for find_starbase in next(os.walk(path_to_starbase))[1]:
+        if "starbase" in find_starbase:
+            starbase_dir = os.path.join(includeos_src, path_to_starbase, find_starbase)
+
+    run_test(stabase_dir)
+
+
 def build_service(subdir):
-    examples_dir = os.path.join(includeos_src,'examples', subdir)
-    os.chdir(examples_dir)
+    service_dir = os.path.join(includeos_src,'examples', subdir)
+    run_test(service_dir)
+
+
+def run_test(run_dir):
+    os.chdir(run_dir)
     subprocess.call("ls")
     subprocess.call(["git", "submodule", "update", "--init", "--recursive"])
 
@@ -47,11 +59,6 @@ for subdir in next(os.walk(path_to_examples))[1]:
     examples.append(subdir)
     count = count + 1
 
-for find_starbase in next(os.walk(path_to_starbase))[1]:
-    if "starbase" in find_starbase:
-        examples.append(find_starbase)
-        count = count + 1
-
 p = Pool(count)
 p.map(build_service, examples)
-vm.cmake().boot(20).clean()
+starbase
