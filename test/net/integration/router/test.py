@@ -51,6 +51,7 @@ def iperf_client(o):
     vmrunner.vms[0].exit(0, "Test completed without errors")
     return True
 
+subprocess.call(["./setup.sh", "--clean"])
 
 subprocess.call("./setup.sh")
 

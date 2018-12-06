@@ -1,8 +1,8 @@
 {
   "image": "test_router.img",
   "mem" : 320,
-  "net" : [{"device" : "virtio"},
-           {"device" : "virtio"}],
+  "net" : [{"device" : "vmxnet3"},
+           {"device" : "vmxnet3"}],
   "intrusive": "True",
   "time_sensitive" : "True"
 }
