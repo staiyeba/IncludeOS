@@ -23,6 +23,7 @@ path_to_examples = os.path.join(includeos_src,'examples')
 path_to_starbase = os.path.join(includeos_src,'lib/uplink')
 
 def starbase():
+    print(">>>Building starbase")
     for find_starbase in next(os.walk(path_to_starbase))[1]:
         if "starbase" in find_starbase:
             starbase_dir = os.path.join(includeos_src, path_to_starbase, find_starbase)
@@ -31,6 +32,7 @@ def starbase():
 
 
 def build_service(subdir):
+    print(">>>Building service:" + subdir)
     service_dir = os.path.join(includeos_src,'examples', subdir)
     run_test(service_dir)
 
@@ -49,8 +51,6 @@ def run_test(run_dir):
     dot = '.'
     subprocess.call(['/bin/bash', run_boot_path,clean_build, dot,'&>',tmpfile ])
     print("[ PASS ]")
-
-print(">>>Building all examples")
 
 for subdir in next(os.walk(path_to_examples))[1]:
     if skip_tests in subdir:
