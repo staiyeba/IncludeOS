@@ -50,7 +50,7 @@ def run_test(run_dir):
     clean_build = '-cb'
     dot = '.'
     subprocess.call(['/bin/bash', run_boot_path,clean_build, dot,'&>',tmpfile ])
-    print("[ PASS ]")
+    print(run_dir + " [ PASS ]")
 
 for subdir in next(os.walk(path_to_examples))[1]:
     if skip_tests in subdir:
