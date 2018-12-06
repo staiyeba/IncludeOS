@@ -81,7 +81,7 @@ pipeline {
                   chmod u+w ~
                   . ./etc/use_clang_version.sh
                   cd test
-                  python testrunner.py -s stress -p 1 -S
+                  python testrunner.py -t stress -s intrusive -p 1 -S
                 '''
                 sh 'exit 0'
             }
@@ -93,7 +93,7 @@ pipeline {
                   chmod u+w ~
                   . ./etc/use_clang_version.sh
                   cd test
-                  python testrunner.py -s intrusive -p 1 -S
+                  python testrunner.py -t intrusive -p 1 -S
                 '''
                 sh 'exit 0'
             }
