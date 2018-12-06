@@ -39,7 +39,6 @@ def build_service(subdir):
 
 def run_test(run_dir):
     os.chdir(run_dir)
-    subprocess.call("ls")
     subprocess.call(["git", "submodule", "update", "--init", "--recursive"])
 
     if os.path.exists("prereq.sh"):
