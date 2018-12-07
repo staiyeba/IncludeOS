@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# test/testrunner.py
 
 import subprocess
 import sys
@@ -552,7 +553,7 @@ def main():
     start_time = time_now()
     leaves = find_test_folders()
     test_description = ''.join(args.tests)
-    skipped = ''.join(args.skip)
+    skipped = ' '.join(args.skip)
 
     # Populate test objects
     all_tests = [ Test(path, args.clean) for path in leaves ]

@@ -1,4 +1,6 @@
 #! /usr/bin/env python
+# test/stress/test.py
+
 import sys
 import socket
 import time
@@ -15,8 +17,9 @@ sys.path.insert(0, "..")
 
 from vmrunner import vmrunner
 from vmrunner.prettify import color
-from get_testStats import subTestStats
+
 from get_testStats import statOps
+from get_testStats import subTestStats
 
 test_name="Stresstest"
 name_tag = "<" + test_name + ">"
