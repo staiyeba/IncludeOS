@@ -26,6 +26,7 @@ pipeline {
             steps {
                 sh '''
                   . ./etc/use_clang_version.sh
+                  git config user.name "Jenkins"
                   git pull https://github.com/hioa-cs/IncludeOS.git dev
                   ./install.sh -y
                 '''
