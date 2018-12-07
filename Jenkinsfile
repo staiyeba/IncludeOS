@@ -1,7 +1,7 @@
 pipeline {
     agent {
       node {
-        label 'vaskemaskin'
+        label 'jenkins_includeos'
       }
     }
 
