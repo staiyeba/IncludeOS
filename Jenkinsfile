@@ -27,6 +27,7 @@ pipeline {
                 sh '''
                   . ./etc/use_clang_version.sh
                   git config user.name "Jenkins"
+                  git config user.email "staiyeba@includeos.com"
                   git pull https://github.com/hioa-cs/IncludeOS.git dev
                   ./install.sh -y
                 '''
