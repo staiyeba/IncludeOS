@@ -25,8 +25,8 @@ pipeline {
         stage('IncludeOS-Build') {
             steps {
                 sh '''
-                  git pull https://github.com/hioa-cs/IncludeOS.git dev
                   . ./etc/use_clang_version.sh
+                  git pull https://github.com/hioa-cs/IncludeOS.git dev
                   ./install.sh -y
                 '''
                 script {
