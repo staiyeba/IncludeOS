@@ -1,7 +1,7 @@
 pipeline {
     agent {
       node {
-        label 'jenkins_includeos'
+        label 'vaskemaskin'
       }
     }
 
@@ -15,7 +15,7 @@ pipeline {
     }
 
     options {
-        buildDiscarder(logRotator(numToKeepStr: '5'))
+        buildDiscarder(logRotator(numToKeepStr: '30'))
         timestamps()
         timeout(time: 30, unit: 'MINUTES')
 	      ansiColor('xterm')
@@ -39,7 +39,7 @@ pipeline {
             }
         }
 
-        stage('Integration-Tests') {
+        stage('IncludeOS-Tests') {
             steps {
               withCredentials([file(credentialsId: 'solid-feat', variable: 'client_secret')]) {
                   sh '''
@@ -59,34 +59,10 @@ pipeline {
                 . ./etc/use_clang_version.sh
                 cd test
 
-                python testrunner.py -s intrusive stress misc posix/integration/tcp -p 1 -S
+                python testrunner.py -s intrusive -p 1 -S
               '''
               sh 'exit 0'
 
-            }
-        }
-
-        stage('Service-Tests') {
-            steps {
-                sh '''
-                  chmod u+w ~
-                  . ./etc/use_clang_version.sh
-                  cd test
-                  python testrunner.py -t misc -s intrusive -p 1 -S
-                '''
-                sh 'exit 0'
-                }
-        }
-
-        stage('Stress-Tests') {
-            steps {
-                sh '''
-                  chmod u+w ~
-                  . ./etc/use_clang_version.sh
-                  cd test
-                  python testrunner.py -t stress -s intrusive -p 1 -S
-                '''
-                sh 'exit 0'
             }
         }
 
