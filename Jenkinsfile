@@ -25,6 +25,7 @@ pipeline {
         stage('IncludeOS-Build') {
             steps {
                 sh '''
+                  git clone https://github.com/hioa-cs/IncludeOS.git
                   . ./etc/use_clang_version.sh
                   ./install.sh -y
                 '''
