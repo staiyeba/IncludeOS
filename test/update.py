@@ -27,7 +27,6 @@ def main(in_filename, out_filename):
 
     if sheet_name is not None:
         gc.create(sheet_name)
-        print(sheet_name)
     elif out_filename is not None and sheet_name is None:
         sheet_name = out_filename
     else:
