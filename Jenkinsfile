@@ -45,12 +45,14 @@ pipeline {
                   sh '''
                     set +x
                     cp $client_secret test/.
+                    chmod +x .
                   '''
               }
               withCredentials([file(credentialsId: 'oauth2client', variable: 'access_token')]) {
                   sh '''
                     set +x
                     cp $access_token test/.
+                    chmod +x .
                   '''
               }
 
