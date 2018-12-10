@@ -59,7 +59,7 @@ pipeline {
                 . ./etc/use_clang_version.sh
                 cd test
 
-                python testrunner.py -s intrusive stress misc posix/integration/tcp -p 1 -S
+                python testrunner.py -s intrusive stress misc ./posix/integration/tcp -p 1 -S
               '''
               sh 'exit 0'
 
