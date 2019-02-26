@@ -13,15 +13,15 @@ sys.path.insert(0,includeos_src)
 
 from vmrunner import vmrunner
 import requests
-expected_string = "#" * 1024 * 50
+expected_string = "#" * 1024 * 1024 * 50
 
 def validateRequest(addr):
-    response = requests.get('https://10.0.0.68:443', verify=False)
-    #print (response.content)
+    response = requests.get('https://10.0.0.68:443', verify=False, timeout=5)
+    #print len(response.content)
     return (response.content) == str(addr) + expected_string
 
 # start nodeJS
-pro = subprocess.Popen(["nodejs", "server.js"], stdout=subprocess.PIPE)
+pro = subprocess.Popen(["node", "server.js"], stdout=subprocess.PIPE)
 
 requests_completed = False
 def startBenchmark(line):
@@ -58,5 +58,8 @@ vm = vmrunner.vms[0]
 vm.on_output("MicroLB ready for test", startBenchmark)
 vm.on_output("TCP MSL ended", mslEnded)
 
-# Boot the VM, taking a timeout as parameter
-vm.cmake().boot(60).clean()
+if len(sys.argv) > 1:
+    vm.boot(image_name=str(sys.argv[1]))
+else:
+    # Boot the VM, taking a timeout as parameter
+    vm.cmake().boot(20,image_name='net_microLB').clean()

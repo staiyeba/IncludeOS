@@ -73,6 +73,7 @@ void Listener::segment_arrived(Packet_view& packet) {
     // don't waste time if the packet does not have SYN
     if(UNLIKELY(not packet.isset(SYN) or packet.has_tcp_data()))
     {
+      TCPL_PRINT2("<Listener::segment_arrived> Packet did not have SYN - dropping\n");
       host_.send_reset(packet);
       return;
     }
@@ -81,8 +82,10 @@ void Listener::segment_arrived(Packet_view& packet) {
     host_.connection_attempts_++;
 
     // if we don't like this client, do nothing
-    if(UNLIKELY(on_accept_(packet.source()) == false))
+    if(UNLIKELY(on_accept_(packet.source()) == false)) {
+      TCPL_PRINT2("<Listener::segment_arrived> on_accept says NO\n");
       return;
+    }
 
     // remove oldest connection if queue is full
     TCPL_PRINT2("<Listener::segment_arrived> SynQueue: %u\n", syn_queue_.size());
@@ -115,12 +118,12 @@ void Listener::segment_arrived(Packet_view& packet) {
   TCPL_PRINT2("<Listener::segment_arrived> No receipent\n");
 }
 
-void Listener::remove(Connection_ptr conn) {
+void Listener::remove(const Connection* conn) {
   TCPL_PRINT2("<Listener::remove> Try remove %s\n", conn->to_string().c_str());
   auto it = syn_queue_.begin();
   while(it != syn_queue_.end())
   {
-    if((*it) == conn)
+    if(it->get() == conn)
     {
       syn_queue_.erase(it);
       debug("<Listener::remove> %s removed.\n", conn->to_string().c_str());
@@ -132,9 +135,10 @@ void Listener::remove(Connection_ptr conn) {
 
 void Listener::connected(Connection_ptr conn) {
   debug("<Listener::connected> %s connected\n", conn->to_string().c_str());
-  remove(conn);
+  remove(conn.get());
   Expects(conn->is_connected());
-  host_.add_connection(conn);
+  if (UNLIKELY(! host_.add_connection(conn)))
+    return;
 
   if(on_connect_ != nullptr)
     on_connect_(conn);

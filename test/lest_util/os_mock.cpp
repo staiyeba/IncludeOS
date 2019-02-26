@@ -21,14 +21,25 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <gsl/gsl_assert>
-void* memalign(size_t alignment, size_t size) {
+#include <errno.h>
+
+void* memalign(size_t align, size_t size) {
   void* ptr {nullptr};
-  int res = posix_memalign(&ptr, alignment, size);
-  Ensures(res == 0);
+
+  if (align < sizeof(void*))
+    align = sizeof(void*);
+  if (size < sizeof(void*))
+    size = sizeof(void*);
+
+  int res = posix_memalign(&ptr, align, size);
+  if (res == EINVAL)
+    printf("Error %i: posix_memalign got invalid alignment param %zu \n", res, align);
+  if (res == ENOMEM)
+    printf("Error %i: posix_memalign failed, not enough memory  %zu \n", res);
   return ptr;
 }
-void* aligned_alloc(size_t alignment, size_t size) {
-  return memalign(alignment, size);
+void* aligned_alloc(size_t align, size_t size) {
+  return memalign(align, size);
 }
 #endif
 
@@ -70,7 +81,6 @@ printf("%s", str);
 void OS::start(unsigned, unsigned) {}
 void OS::default_stdout(const char*, size_t) {}
 void OS::event_loop() {}
-void OS::block() {}
 void OS::halt() {}
 void OS::resume_softreset(intptr_t) {}
 bool OS::is_softreset_magic(uint32_t) {

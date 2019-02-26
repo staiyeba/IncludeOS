@@ -80,7 +80,7 @@ add_definitions(-DSERVICE=\"\\\"${BINARY}\\\"\")
 add_definitions(-DSERVICE_NAME=\"\\\"${SERVICE_NAME}\\\"\")
 add_definitions(-DUSERSPACE_LINUX)
 
-set(IOSPATH $ENV{INCLUDEOS_PREFIX}/includeos)
+set(IOSPATH $ENV{INCLUDEOS_PREFIX})
 set(IOSLIBS ${IOSPATH}/${ARCH}/lib)
 
 # includes
@@ -153,7 +153,7 @@ if (ENABLE_S2N)
   add_library(openssl STATIC IMPORTED)
   set_target_properties(openssl PROPERTIES LINKER_LANGUAGE C)
   set_target_properties(openssl PROPERTIES IMPORTED_LOCATION ${IOSLIBS}/libssl.a)
-  
+
   set(S2N_LIBS s2n openssl crypto)
   target_link_libraries(service ${S2N_LIBS} -ldl -pthread)
 endif()
@@ -180,7 +180,7 @@ if (ENABLE_LTO OR USE_LLD)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=lld")
 endif()
 if (LIBFUZZER)
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=fuzzer -lc++abi")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=fuzzer -stdlib=libc++")
 endif()
 
 if (STRIP_BINARY)

@@ -5,8 +5,9 @@ import os
 import subprocess
 import subprocess32
 import thread
+import time
 
-thread_timeout = 30
+thread_timeout = 60
 
 includeos_src = os.environ.get('INCLUDEOS_SRC',
                                os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))).split('/test')[0])
@@ -51,7 +52,9 @@ def iperf_client(o):
     vmrunner.vms[0].exit(0, "Test completed without errors")
     return True
 
-
+#TODO pythonize ?
+#clean anything hangig after a crash.. from previous test
+subprocess.call(["./setup.sh", "--clean"])
 subprocess.call("./setup.sh")
 
 vm = vmrunner.vms[0]
@@ -69,5 +72,8 @@ vm.on_output("Service ready", iperf_client)
 # Clean
 vm.on_exit(clean)
 
-# Boot the VM, taking a timeout as parameter
-vm.cmake().boot(thread_timeout).clean()
+if len(sys.argv) > 1:
+    vm.boot(image_name=str(sys.argv[1]))
+else:
+    # Boot the VM, taking a timeout as parameter
+    vm.cmake().boot(thread_timeout,image_name='net_router').clean()
