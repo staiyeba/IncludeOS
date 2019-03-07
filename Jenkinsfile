@@ -49,6 +49,15 @@ pipeline {
             echo "code coverage in file: $COVERAGE_DIR"
             echo "Code coverage in: http://vaskemaskin.includeos.org:8080/coverage_includeos/${env.JOB_NAME}"
           }
+          post {
+            success {
+              script {
+                if (env.CHANGE_ID) {
+                  pullRequest.comment("Code coverage: http://vaskemaskin.includeos.org:8080/coverage_includeos/${env.JOB_NAME}")
+                }
+              }
+            }
+          }
         }
       }
     }
