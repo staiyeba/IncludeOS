@@ -1,7 +1,7 @@
 ![IncludeOS Logo](./etc/logo.png)
 ================================================
 
-[Build](started)
+Started[^started]
 
 **IncludeOS** is an includable, minimal [unikernel](https://en.wikipedia.org/wiki/Unikernel) operating system for C++ services running in the cloud. Starting a program with `#include <os>` will literally include a tiny operating system into your service during link-time.
 
@@ -35,9 +35,9 @@ IncludeOS is free software, with "no warranties or restrictions of any kind".
 A longer list of features and limitations can be found on our [documentation site](http://includeos.readthedocs.io/en/latest/Features.html).
 
 ___
-
+[^started]:
 ### Getting started with IncludeOS development
-<p label=started>
+
 The [IncludeOS](https://www.includeos.org/) conan recipes are developed with [Conan version 1.13.1](https://github.com/conan-io/conan/releases/tag/1.13.1) or newer.
 
 For Mac OS ensure that you have a working installation of [brew](https://brew.sh/) to be able to install all dependencies.
