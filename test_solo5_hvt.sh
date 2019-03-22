@@ -12,6 +12,6 @@ fi
 
 pushd examples/demo_service
 mkdir -p build
-boot --with-solo5 .
+boot --with-solo5-hvt .
 popd
 trap - EXIT
