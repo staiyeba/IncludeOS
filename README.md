@@ -10,7 +10,7 @@ The build system will:
 
 IncludeOS is free software, with "no warranties or restrictions of any kind".
 
-[![Pre-release](https://img.shields.io/github/release-pre/hioa-cs/IncludeOS.svg)](https://github.com/hioa-cs/IncludeOS/releases)
+[![Pre-release](https://img.shields.io/github/release-pre/includeos/IncludeOS.svg)](https://github.com/hioa-cs/IncludeOS/releases)
 [![Apache v2.0](https://img.shields.io/badge/license-Apache%20v2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Join the chat](https://img.shields.io/badge/chat-on%20Slack-brightgreen.svg)](https://goo.gl/NXBVsc)
 
@@ -22,19 +22,19 @@ IncludeOS is free software, with "no warranties or restrictions of any kind".
 - [Getting started with IncludeOS development](#getting_started)
 
 - ###### Service Developers Howto:
- - [Building IncludeOS with dependencies from conan](#building_includeos)
- - [Building, starting and creating your first IncludeOS Service](#building_service)
+  * [Building IncludeOS with dependencies from conan](#building_includeos)
+  * [Building, starting and creating your first IncludeOS Service](#building_service)
 
 - ###### Kernel Developers Howto:
- - [Getting IncludeOS in Editable mode](#editing_includeos)
- - [Getting started developing packages](#develop_pkg)
+  * [Getting IncludeOS in Editable mode](#editing_includeos)
+  * [Getting started developing packages](#develop_pkg)
 
 - ###### Other Info:
- - [Contributing to IncludeOS](#contribute)
- - [Our Website](https://www.includeos.org/)
- - [The Company](https://www.includeos.com/)
- - [C++ Guidelines](#guideline)
- - [Security contact](#security)
+  * [Contributing to IncludeOS](#contribute)
+  * [Our Website](https://www.includeos.org/)
+  * [The Company](https://www.includeos.com/)
+  * [C++ Guidelines](#guideline)
+  * [Security contact](#security)
 
 
 ### <a name="features"></a> Key features
@@ -64,7 +64,7 @@ For Mac OS ensure that you have a working installation of [brew](https://brew.sh
 
 ##### Cloning the IncludeOS repository:
 ```
-    $ git clone https://github.com/hioa-cs/IncludeOS
+    $ git clone https://github.com/includeos/IncludeOS
     $ cd IncludeOS
 ```
 
@@ -161,9 +161,34 @@ are in progress and will be updated soon._
 if you want to check if a package exists you can search for it:
 
 ```
-    conan search help
+    $ conan search help
 ```
 
+To access all the available packages on our includeos remote:
+
+```
+    $ conan search -r includeos
+```
+
+This should list all the packages we have uploaded to the includeos repository.
+We allow uploading of packages to two channels, namely:
+- `stable`: this channel has all the stable packages.
+- `latest`: this channel will have the latest package
+  in development/test phase.
+
+To find all the stable versions uploaded for a particular package, try:
+
+```
+    $ conan search -r includeos '<package_name>/*@includeos/stable'
+```
+> **NOTE:** We only guarantee that the **latest 10 packages** are kept in the
+`latest` channel. All `stable` packages will be kept in the stable channel unless
+proven unsafe. One suggested workaround is to copy packages into your own repository.
+YOu can do that using the copy command:
+
+```
+    $ conan copy --all -p <path-to-conanfile> <package_name>@<your_repository>/<your_channel>
+```
 ___
 
 ### <a name="building_service"></a>Building, starting and creating your first IncludeOS Service with Conan
@@ -263,7 +288,8 @@ You should then be able to run your service in the same way as the demo_service.
 To add a new service to our demo examples, make a PR to our [demo-examples](https://github.com/includeos/demo-examples) repo. Make sure to
 add a README in your example folder with description of your service.
 
-**Note:** Remember to deactivate your service environment after your work with:
+
+> **Note:** Remember to deactivate your service environment after your work with:
 
 ```
   $ source deactivate.sh
@@ -272,7 +298,22 @@ add a README in your example folder with description of your service.
 <!-- TODO: ### How building with Conan works? -->
 ___
 
+<<<<<<< HEAD
 ### <a name="editing_includeos"></a> Getting IncludeOS in editable mode
+=======
+### <a name="editing_includeos"></a> Getting IncludeOS in Editable mode
+
+If you are a kernel developer or are simple interested in fiddling with our
+kernel code, you can use the includeos package in `editable` mode. This is useful
+when working with several interconnected components and you would like to test
+your changes across several libraries or functionalities.
+
+Below we have written down a few steps to get you started with editable packages.
+You can read more about it at [packages in editable mode](https://docs.conan.io/en/latest/developing_packages/editable_packages.html).
+
+> **Note:** Currently this is an experimental feature on conan version 1.13 and they
+have mentioned that for future releases the feature is subject to breaking changes.
+>>>>>>> c993f11682bdf6e87f3bdf1208cd17fd15d84aef
 
 To get started with getting the conan package in editable mode,
 
@@ -307,7 +348,7 @@ Make sure to adjust the version to whatever is apropriate.
 ```
   conan editable add . includeos/0.15.0@includeos/test --layout=layout.txt
 ```
-**Note:** Avoid choosing `latest`
+> **Note:** Avoid choosing `latest`
 
 - ###### Check Status
 
@@ -351,8 +392,12 @@ ___
 
 ### <a name="develop_pkg"></a> Getting started developing packages
 
-Currently building works for `clang-6` and `gcc-7.3.0` compiler toolchains.
-It is expected that these are already installed in your system.
+If you are interested in editing/building our dependency packages on your own,
+you can checkout our repositories at [includeos/](https://github.com/includeos/).  
+Some our tools and libraries are listed below under [Tools and Libraries](#libs_tools).
+You can find the external dependency recipes at [includeos/conan](https://github.com/includeos/conan).
+Currently we build with `clang-6` and `gcc-7.3.0` compiler toolchains.
+It is expected that these are already installed on your system.
 
 ##### Building Tools
 
@@ -380,7 +425,7 @@ For MacOS users, we currently have a [apple-clang-10-macos-toolchain](https://gi
 To build our other dependencies you may use the conan recipes we have in the
 [conan](https://github.com/includeos/conan) repository.
 
-**Note:** If you plan to build dependencies you might need to ensure you have
+> **Note:** If you plan to build dependencies you might need to ensure you have
 other missing libraries installed.
 
 **Requirements**
@@ -419,7 +464,7 @@ To build the libraries and tools,
   $ conan create . includeos/test -pr clang-6.0-linux-x86_64
 ```
 
-Below is a list of some of our Libraries/Tools:
+<a name="libs_tools"></a> Below is a list of some of our Libraries/Tools:
 
 - [Vmbuild](https://github.com/includeos/vmbuild) -
 Vmbuild is an utility for building the IncludeOS virtual machines.
@@ -461,11 +506,11 @@ ___
 
 IncludeOS is being developed on GitHub. Create your own fork, send us a pull request, and [chat with us on Slack](https://goo.gl/NXBVsc). Please read the [Guidelines for Contributing to IncludeOS](http://includeos.readthedocs.io/en/latest/Contributing-to-IncludeOS.html).
 
-**Important: Send your pull requests to the `dev` branch**. It is ok if your pull requests come from your master branch.
+> **Important: Send your pull requests to the `dev` branch**. It is ok if your pull requests come from your master branch.
 
 ## <a name="guideline"></a> C++ Guidelines
 
-We want to adhere as much as possible to the [ISO C++ Core Guidelines](https://github.com/isocpp/CppCoreGuidelines). When you find code in IncludeOS which doesn't adhere, please let us know in the [issue tracker](https://github.com/hioa-cs/IncludeOS/issues) - or even better, fix it in your own fork and send us a [pull-request](https://github.com/hioa-cs/IncludeOS/pulls).
+We want to adhere as much as possible to the [ISO C++ Core Guidelines](https://github.com/isocpp/CppCoreGuidelines). When you find code in IncludeOS which doesn't adhere, please let us know in the [issue tracker](https://github.com/includeos/IncludeOS/issues) - or even better, fix it in your own fork and send us a [pull-request](https://github.com/includeos/IncludeOS/pulls).
 
 [brew]: https://brew.sh/
 [qemu]: https://www.qemu.org/
