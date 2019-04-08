@@ -1,30 +1,14 @@
 import shutil
 
-from conans import ConanFile,tools,CMake
+from conans import ConanFile, python_requires, CMake
+from conans.errors import ConanInvalidConfiguration
 
-def get_version():
-    git = tools.Git()
-    try:
-        prev_tag = git.run("describe --tags --abbrev=0")
-        commits_behind = int(git.run("rev-list --count %s..HEAD" % (prev_tag)))
-        # Commented out checksum due to a potential bug when downloading from bintray
-        #checksum = git.run("rev-parse --short HEAD")
-        if prev_tag.startswith("v"):
-            prev_tag = prev_tag[1:]
-        if commits_behind > 0:
-            prev_tag_split = prev_tag.split(".")
-            prev_tag_split[-1] = str(int(prev_tag_split[-1]) + 1)
-            output = "%s-%d" % (".".join(prev_tag_split), commits_behind)
-        else:
-            output = "%s" % (prev_tag)
-        return output
-    except:
-        return None
+conan_tools = python_requires("conan-tools/[>=1.0.0]@includeos/stable")
 
 class IncludeOSConan(ConanFile):
     settings= "os","arch","build_type","compiler"
     name = "includeos"
-    version = get_version()
+    version = conan_tools.git_get_semver()
     license = 'Apache-2.0'
     description = 'Run your application with zero overhead'
     generators = [ 'cmake','virtualenv' ]
@@ -37,40 +21,49 @@ class IncludeOSConan(ConanFile):
     }
 
     options = {
-        "apple":['',True],
-        "solo5":['ON','OFF'],
-        "basic":['ON','OFF']
+        'platform': [
+            'default',
+            'nano',
+            'solo5-hvt',
+            'solo5-spt',
+            'userspace'
+        ],
+        'smp': [ True, False ]
     }
-    #actually we cant build without solo5 ?
-    default_options= {
-        "apple": '',
-        "solo5": 'OFF',
-        "basic": 'OFF'
+
+    default_options = {
+        'platform':'default',
+        'smp': False
     }
+
     no_copy_source=True
-    default_user='includeos'
-    default_channel='test'
-    #keep_imports=True
     def requirements(self):
-        self.requires("libcxx/[>=5.0]@{}/{}".format(self.user,self.channel))## do we need this or just headers
-        self.requires("GSL/2.0.0@{}/{}".format(self.user,self.channel))
-        self.requires("libgcc/1.0@{}/{}".format(self.user,self.channel))
+        self.requires("libcxx/[>=5.0]@includeos/stable")## do we need this or just headers
+        self.requires("GSL/2.0.0@includeos/stable")
+        self.requires("libgcc/1.0@includeos/stable")
 
         if self.settings.arch == "armv8":
-            self.requires("libfdt/1.4.7@includeos/test")
+            self.requires("libfdt/1.4.7@includeos/stable")
 
-        if self.options.basic == 'OFF':
-            self.requires("rapidjson/1.1.0@{}/{}".format(self.user,self.channel))
-            self.requires("http-parser/2.8.1@{}/{}".format(self.user,self.channel)) #this one is almost free anyways
-            self.requires("uzlib/v2.1.1@{}/{}".format(self.user,self.channel))
-            self.requires("botan/2.8.0@{}/{}".format(self.user,self.channel))
-            self.requires("openssl/1.1.1@{}/{}".format(self.user,self.channel))
-            self.requires("s2n/1.1.1@{}/{}".format(self.user,self.channel))
+        if not self.options.platform == 'nano':
+            self.requires("rapidjson/1.1.0@includeos/stable")
+            self.requires("http-parser/2.8.1@includeos/stable") #this one is almost free anyways
+            self.requires("uzlib/v2.1.1@includeos/stable")
+            self.requires("botan/2.8.0@includeos/stable")
+            self.requires("openssl/1.1.1@includeos/stable")
+            self.requires("s2n/0.8@includeos/stable")
 
-        if (self.options.solo5):
-            self.requires("solo5/0.4.1@{}/{}".format(self.user,self.channel))
+        if self.options.platform == 'solo5-hvt' or self.options.platform == 'solo5-spt':
+            if self.settings.compiler != 'gcc' or self.settings.arch == "x86":
+                raise ConanInvalidConfiguration("solo5 is only supported with gcc")
+            self.requires("solo5/0.4.1@includeos/stable")
 
     def configure(self):
+        if self.options.platform == 'solo5-hvt':
+            self.options["solo5"].tenders='hvt'
+        if self.options.platform == 'solo5-spt':
+            self.options["solo5"].tenders='spt'
+
         del self.settings.compiler.libcxx
 
     def _target_arch(self):
@@ -79,12 +72,12 @@ class IncludeOSConan(ConanFile):
             "x86_64":"x86_64",
             "armv8" : "aarch64"
         }.get(str(self.settings.arch))
+
     def _configure_cmake(self):
         cmake = CMake(self)
-        cmake.definitions['ARCH']=self._target_arch()
-        if (self.options.basic):
-            cmake.definitions['CORE_OS']=True
-        cmake.definitions['WITH_SOLO5']=self.options.solo5
+        cmake.definitions['VERSION']=self.version
+        cmake.definitions['PLATFORM']=self.options.platform
+        cmake.definitions['SMP']=self.options.smp
         cmake.configure(source_folder=self.source_folder)
         return cmake;
 
@@ -103,24 +96,21 @@ class IncludeOSConan(ConanFile):
 
         # this puts os.cmake in the path
         self.cpp_info.builddirs = ["cmake"]
+
         # this ensures that API is searchable
         self.cpp_info.includedirs=['include/os']
-        platform='platform'
-        #TODO se if this holds up for other arch's
-        if (self.settings.arch == "x86" or self.settings.arch == "x86_64"):
-            if ( self.options.basic == 'ON'):
-                platform='x86_nano'
-            else:
-                platform='x86_pc'
-        if (self.settings.arch == "armv8"):
-            platform='aarch64_vm'
-        #if (self.settings.solo5):
-        #if solo5 set solo5 as platform
-        self.cpp_info.libs=[platform,'os','arch','musl_syscalls']
-        self.cpp_info.libdirs = [
-            'lib',
-            'platform'
-        ]
+
+        platform = {
+            'default' : '{}_pc'.format(self._target_arch()),
+            'nano' : '{}_nano'.format(self._target_arch()),
+            'solo5-hvt' : '{}_solo5-hvt'.format(self._target_arch()),
+            'solo5-spt' : '{}_solo5-spt'.format(self._target_arch()),
+            'userspace' : '{}_userspace'.format(self._target_arch())
+        }
+
+        self.cpp_info.libs=['os','arch','musl_syscalls']
+        self.cpp_info.libs.append(platform.get(str(self.options.platform),"NONE"))
+        self.cpp_info.libdirs = [ 'lib', 'platform' ]
 
     def deploy(self):
         self.copy("*",dst="cmake",src="cmake")
