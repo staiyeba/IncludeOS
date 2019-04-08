@@ -147,26 +147,15 @@ These profiles should have prebuilt packages available and are tested in CI. If 
 
 ## <a name="editing_includeos"></a> Building with IncludeOS in editable mode
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-### <a name="editing_includeos"></a> Getting IncludeOS in editable mode
-=======
 ### <a name="editing_includeos"></a> Getting IncludeOS in Editable mode
 =======
 If you are a kernel developer or are simple interested in fiddling with our kernel code, you can use the includeos-package in editable mode. When you rebuild the package will then automatically be updated so it can be used by other packages locally. This is useful when working with several interconnected components and you would like to test your changes across several libraries.
->>>>>>> f48fa8c48e706544bdea1e8a01d5e1fc62567927
 
 You can read more about how editable mode works in the [Conan documentation](https://docs.conan.io/en/latest/developing_packages/editable_packages.html).
 
 Below we have written down a few steps to get you started with editable packages and IncludeOS.
 
-<<<<<<< HEAD
-> **Note:** Currently this is an experimental feature on conan version 1.13 and they
-have mentioned that for future releases the feature is subject to breaking changes.
->>>>>>> c993f11682bdf6e87f3bdf1208cd17fd15d84aef
-=======
 > **Note:** Currently this is an experimental feature on conan version 1.13 and they have mentioned that for future releases the feature is subject to breaking changes.
->>>>>>> f48fa8c48e706544bdea1e8a01d5e1fc62567927
 
 Start by cloning the IncludeOS source code and create a `build` folder. You have to edit `etc/layout.txt` in the source code to point to the `build` folder you created, by updating the `build_dir` variable.
 
