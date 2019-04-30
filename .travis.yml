@@ -1,6 +1,5 @@
 os: osx
 osx_image: xcode10.2
-language: python
 compiler:
   - clang
   - gcc
@@ -17,7 +16,7 @@ jobs:
     - stage: IncludeOS-nano
       script:
         - echo "IncludeOS nano"
-        - conan create . includeos/latest -pr
+        - conan create . includeos/latest -pr clang-6.0-linux-x86/nano
 
     - stage: IncludeOS-x86
       script: echo "x86"
