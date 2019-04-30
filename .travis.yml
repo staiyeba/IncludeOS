@@ -4,6 +4,8 @@ compiler:
   - clang
   - gcc
 
+env: COMPILER='clang++'
+
 addons:
   homebrew:
     packages:
