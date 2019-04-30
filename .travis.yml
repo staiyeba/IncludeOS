@@ -4,9 +4,7 @@ compiler:
   - clang
   - gcc
 
-env:
-  - CC=clang-5.0
-  - CXX=clang++-5.0
+env: CC=clang-5.0 CXX=clang++-5.0
 
 addons:
   homebrew:
