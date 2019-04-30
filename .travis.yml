@@ -1,0 +1,25 @@
+os: osx
+osx_image: xcode10.2
+language: python
+compiler:
+  - clang
+
+addons:
+  homebrew:
+    packages:
+    - cmake
+    - python3
+    - conan
+
+jobs:
+  fast_finish: true
+  include:
+    - stage: IncludeOS-nano
+      script: echo "IncludeOS nano"
+    - stage: IncludeOS-x86
+      script: echo "x86"
+    - stage: IncludeOS-x86_64
+      script: echo "x86_64"
+
+after_success:
+  - echo "Success!"
