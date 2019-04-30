@@ -32,13 +32,6 @@ matrix:
         - echo "IncludeOS chainloader x86"
         - conan create src/chainload includeos/latest -pr clang-6.0-linux-x86
 
-before_cache:
-  - brew cleanup
-
-cache:
-  - directories:
-    - $HOME/Library/Caches/Homebrew
-
 install:
   - conan config install https://github.com/includeos/conan_config.git
   - conan --version
