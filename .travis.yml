@@ -25,7 +25,6 @@ matrix:
     - stage: IncludeOS-nano
       script:
         - echo "IncludeOS nano"
-        - env: COMPILER='clang++'
         - conan create . includeos/latest -pr clang-6.0-linux-x86 -o platform=nano
 
     - stage: IncludeOS-x86
@@ -46,7 +45,3 @@ install:
   - brew install llvm
   - brew update
   - clang --version
-  - gcc --version
-
-after_success:
-  - echo "Success!"
