@@ -32,7 +32,8 @@ matrix:
 install:
   - conan config install https://github.com/includeos/conan_config.git
   - conan --version
-  - brew install --with-toolchain llvm
+  - brew tap homebrew/versions
+  - brew install llvm37
   - brew install update
   - clang --version
   - gcc --version
