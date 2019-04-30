@@ -33,7 +33,7 @@ install:
   - conan config install https://github.com/includeos/conan_config.git
   - conan --version
   - brew install llvm
-  - brew install update
+  - brew update
   - clang --version
   - gcc --version
 
