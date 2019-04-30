@@ -3,6 +3,10 @@ osx_image: xcode10.2
 compiler:
   - clang
   - gcc
+env:
+  matrix:
+    - CC=clang-5.0
+    - CXX=clang++-5.0
 
 addons:
   homebrew:
@@ -35,7 +39,7 @@ before_cache:
 cache:
   - directories:
     - $HOME/Library/Caches/Homebrew
-    
+
 install:
   - conan config install https://github.com/includeos/conan_config.git
   - conan --version
