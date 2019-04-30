@@ -43,10 +43,12 @@ extern char _TEXT_START_;
 extern char _LOAD_START_;
 extern char _ELF_END_;
 
-//uintptr_t OS::liveupdate_loc_   = 0;
+extern char __for_production_use;
+inline static bool is_for_production_use() {
+  return &__for_production_use == (char*) 0x2000;
+}
 
 kernel::State __kern_state;
-
 kernel::State& kernel::state() noexcept {
   return __kern_state;
 }
@@ -67,24 +69,6 @@ struct Plugin_desc {
   const char* name;
 };
 static Fixed_vector<Plugin_desc, 16> plugins(Fixedvector_Init::UNINIT);
-
-
-__attribute__((weak))
-size_t kernel::liveupdate_phys_size(size_t /*phys_max*/) noexcept {
-  return 4096;
-};
-
-__attribute__((weak))
-size_t kernel::liveupdate_phys_loc(size_t phys_max) noexcept {
-  return phys_max - liveupdate_phys_size(phys_max);
-};
-
-__attribute__((weak))
-void kernel::setup_liveupdate(uintptr_t)
-{
-  // without LiveUpdate: storage location is at the last page?
-  kernel::state().liveupdate_loc = kernel::heap_max() & ~(uintptr_t) 0xFFF;
-}
 
 const char* os::cmdline_args() noexcept {
   return kernel::cmdline();
@@ -166,10 +150,16 @@ void kernel::post_start()
   const bool unsafe = true;
 #else
   // if we dont have a good random source, its unsafe for production
-  const bool unsafe = CPUID::has_feature(CPUID::Feature::RDRAND);
+  const bool unsafe = !CPUID::has_feature(CPUID::Feature::RDSEED)
+                   && !CPUID::has_feature(CPUID::Feature::RDRAND);
 #endif
   if (unsafe) {
     printf(" +--> WARNiNG: Environment unsafe for production\n");
+    if (is_for_production_use()) {
+      printf(" +--> Stop option enabled. Shutting down now...\n");
+      os::shutdown();
+      return;
+    }
     FILLINE('~');
   }
 

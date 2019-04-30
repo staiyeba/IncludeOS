@@ -1,6 +1,7 @@
 #include "init_libc.hpp"
 
-#include <arch/x86/cpu.hpp>
+//asuming there is one for each target
+#include <cpu.h>
 #include <kernel.hpp>
 #include <kernel/auxvec.h>
 #include <kernel/cpuid.hpp>
@@ -10,7 +11,7 @@
 #include <version.h>
 #include <kprint>
 
-//#define KERN_DEBUG 1
+#define KERN_DEBUG 1
 #ifdef KERN_DEBUG
 #define PRATTLE(fmt, ...) kprintf(fmt, ##__VA_ARGS__)
 #else
@@ -22,8 +23,7 @@ extern char _ELF_END_;
 extern char _INIT_START_;
 extern char _FINI_START_;
 extern char _SSP_INIT_;
-static uint32_t grub_magic;
-static uint32_t grub_addr;
+static uint64_t fdt_addr;
 
 static volatile int global_ctors_ok = 0;
 __attribute__((constructor))
@@ -44,7 +44,8 @@ int kernel_main(int, char * *, char * *)
   PRATTLE("<kernel_main> OS start \n");
 
   // Initialize early OS, platform and devices
-#if defined(PLATFORM_x86_pc)
+  kernel::start(fdt_addr);
+/*#if defined(PLATFORM_x86_pc)
   kernel::start(grub_magic, grub_addr);
 #elif defined(PLATFORM_x86_solo5)
   //kernel::start((const char*) (uintptr_t) grub_magic);
@@ -52,7 +53,8 @@ int kernel_main(int, char * *, char * *)
 #else
   LL_ASSERT(0 && "Implement call to kernel start for this platform");
 #endif
-
+*/
+  PRATTLE("<kernel_main> sanity checks \n");
   // verify certain read-only sections in memory
   // NOTE: because of page protection we can choose to stop checking here
   kernel_sanity_checks();
@@ -61,21 +63,23 @@ int kernel_main(int, char * *, char * *)
   // Initialize common subsystems and call Service::start
   kernel::post_start();
 
+  PRATTLE("<kernel_main> os_event_loop \n");
   // Starting event loop from here allows us to profile OS::start
   os::event_loop();
   return 0;
 }
 
-namespace x86
+namespace aarch64
 {
   // Musl entry
   extern "C"
   int __libc_start_main(int (*main)(int,char **,char **), int argc, char **argv);
 
-  void init_libc(uint32_t magic, uint32_t addr)
+  void init_libc(uintptr_t fdt)
   {
-    grub_magic = magic;
-    grub_addr  = addr;
+    fdt_addr=fdt;
+//    grub_magic = magic;
+//    grub_addr  = addr;
 
     PRATTLE("* Elf start: %p\n", &_ELF_START_);
     auto* ehdr = (Elf64_Ehdr*)&_ELF_START_;
@@ -132,14 +136,15 @@ namespace x86
     aux[i++].set_long(AT_EGID, 0);
     aux[i++].set_long(AT_SECURE, 1);
 
-    const char* plat = "x86_64";
+    const char* plat = "aarch64";
     aux[i++].set_ptr(AT_PLATFORM, plat);
 
     // supplemental randomness
     const long canary = rng_extract_uint64() & 0xFFFFFFFFFFFF00FFul;
+  //  const long canary=0xB15DCAFE;
     const long canary_idx = i;
     aux[i++].set_long(AT_RANDOM, canary);
-    //kprintf("* Stack protector value: %#lx\n", canary);
+    kprintf("* Stack protector value: %#lx\n", canary);
     // entropy slot
     aux[i++].set_ptr(AT_RANDOM, &aux[canary_idx].a_un.a_val);
     aux[i++].set_long(AT_NULL, 0);
@@ -153,6 +158,8 @@ namespace x86
     uint64_t star = star_kernel_cs | star_user_cs;
     x86::CPU::write_msr(IA32_STAR, star);
     x86::CPU::write_msr(IA32_LSTAR, (uintptr_t)&__syscall_entry);
+  #elif defined(__aarch64__)
+  //do nothing.. syscalls should result in svc,hvc etc instructions trapping the exception handler
   #elif defined(__i386__)
     PRATTLE("Initialize syscall intr (32-bit)\n");
     #warning Classical syscall interface missing for 32-bit
