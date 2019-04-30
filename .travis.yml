@@ -3,23 +3,30 @@ osx_image: xcode10.2
 language: python
 compiler:
   - clang
+  - gcc
 
 addons:
   homebrew:
     packages:
     - cmake
-    - python3
     - conan
 
 jobs:
   fast_finish: true
   include:
     - stage: IncludeOS-nano
-      script: echo "IncludeOS nano"
+      script:
+        - echo "IncludeOS nano"
+        - conan create . includeos/latest -pr
+
     - stage: IncludeOS-x86
       script: echo "x86"
     - stage: IncludeOS-x86_64
       script: echo "x86_64"
+
+install:
+  - conan config install https://github.com/includeos/conan_config.git
+  - conan --version
 
 after_success:
   - echo "Success!"
