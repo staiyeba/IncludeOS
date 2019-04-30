@@ -33,5 +33,11 @@ install:
   - conan config install https://github.com/includeos/conan_config.git
   - conan --version
 
+script:
+  - brew install --with-toolchain llvm
+  - brew install update
+  - clang --version
+  - gcc --version
+
 after_success:
   - echo "Success!"
