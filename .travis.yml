@@ -14,9 +14,10 @@ addons:
 
 jobs:
   include:
-    - script: conan create . includeos/latest -pr clang-6.0-macos-x86_64
+    - stage:
+      script: conan create . includeos/latest -pr clang-6.0-macos-x86_64
       name: "Building Kernel x86_64"
-    - script: conan create lib/LiveUpdate includeos/latest -pr clang-6.0-macos-x86_64
+      script: conan create lib/LiveUpdate includeos/latest -pr clang-6.0-macos-x86_64
       name: "LiveUpdate on Kernel x86_64"
 
 before_install:
