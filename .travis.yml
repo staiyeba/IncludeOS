@@ -10,6 +10,7 @@ addons:
     - cmake
     - conan
     - nasm
+    - llvm
 
 matrix:
   include:
@@ -29,7 +30,8 @@ matrix:
         - conan create lib/LiveUpdate includeos/latest -pr clang-6.0-macos-x86_64
 
 before_install:
-  - export CC=which cc
+  - export CC=/usr/local/opt/llvm\@6/bin/clang
+  - export CXX=/usr/local/opt/llvm\@6/bin/clang++
   - git fetch --tags https://github.com/includeos/IncludeOS.git
 
 install:
