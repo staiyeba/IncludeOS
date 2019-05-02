@@ -15,17 +15,9 @@ matrix:
   include:
     - stage: IncludeOS-x86_64
       script:
-        - echo "x86_64"
+        - echo "Building Kernel x86_64"
         - conan create . includeos/latest -pr clang-6.0-macos-x86_64
-
-    - stage: IncludeOS-nano
-      script:
-        - echo "IncludeOS nano"
-        - conan create . includeos/latest -pr clang-6.0-macos-x86_64 -o platform=nano
-
-    - stage: IncludeOS-LiveUpdate
-      script:
-        - echo "Let's build LiveUpdate"
+        - echo "Buidling LiveUpdate"
         - conan create lib/LiveUpdate includeos/latest -pr clang-6.0-macos-x86_64
 
 before_install:
