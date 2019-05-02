@@ -23,10 +23,14 @@ matrix:
         - echo "IncludeOS nano"
         - conan create . includeos/latest -pr clang-6.0-macos-x86_64 -o platform=nano
 
-    - stage: IncludeOS-x86
+    - stage: IncludeOS-LiveUpdate
       script:
-        - echo "IncludeOS chainloader x86"
-        - conan create src/chainload includeos/latest -pr clang-6.0-macos-x86_64
+        - echo "Let's build LiveUpdate"
+        - conan create lib/LiveUpdate includeos/latest -pr clang-6.0-macos-x86_64
+
+before_install:
+  - export CC=which cc
+  - git fetch --tags https://github.com/includeos/IncludeOS.git
 
 install:
   - conan config install https://github.com/includeos/conan_config.git
