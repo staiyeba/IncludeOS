@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 2.8.9)
-include(includeos)
 
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
@@ -89,6 +88,8 @@ if (NOT CMAKE_TESTING_ENABLED)
   add_dependencies(liveupdate hotswap64)
 endif()
 set_target_properties(liveupdate PROPERTIES PUBLIC_HEADER "include/liveupdate;include/liveupdate.hpp")
+
+include(cmake/includeos.cmake)
 
 INSTALL(TARGETS liveupdate
         ARCHIVE DESTINATION lib
