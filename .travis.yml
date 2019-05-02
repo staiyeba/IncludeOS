@@ -10,7 +10,6 @@ addons:
     - cmake
     - conan
     - nasm
-    - llvm
 
 matrix:
   include:
