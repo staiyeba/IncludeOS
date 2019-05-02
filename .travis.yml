@@ -10,10 +10,11 @@ addons:
     - cmake
     - conan
     - nasm
+    - llvm@6
 
 matrix:
   include:
-    - stage: IncludeOS-x86_64
+    - stage: IncludeOS kernel - x86_64
       script:
         - echo "Building Kernel x86_64"
         - conan create . includeos/latest -pr clang-6.0-macos-x86_64
@@ -21,7 +22,6 @@ matrix:
         - conan create lib/LiveUpdate includeos/latest -pr clang-6.0-macos-x86_64
 
 before_install:
-  - brew install llvm@6
   - export CC=/usr/local/opt/llvm\@6/bin/clang
   - export CXX=/usr/local/opt/llvm\@6/bin/clang++
   - git fetch --tags https://github.com/includeos/IncludeOS.git
@@ -29,5 +29,4 @@ before_install:
 install:
   - conan config install https://github.com/includeos/conan_config.git
   - conan --version
-  - brew update
   - clang --version
