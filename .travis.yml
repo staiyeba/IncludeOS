@@ -10,6 +10,7 @@ addons:
     - cmake
     - conan
     - nasm
+    - llvm
 
 matrix:
   include:
@@ -31,6 +32,5 @@ matrix:
 install:
   - conan config install https://github.com/includeos/conan_config.git
   - conan --version
-  - brew install llvm
   - brew update
   - clang --version
