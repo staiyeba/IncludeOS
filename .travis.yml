@@ -12,12 +12,15 @@ addons:
     - nasm
     - llvm@6
 
-matrix:
+jobs:
   include:
     - stage: IncludeOS kernel - x86_64
       script:
         - echo "Building Kernel x86_64"
         - conan create . includeos/latest -pr clang-6.0-macos-x86_64
+
+    - stage: LiveUpdate on Kernel x86_64
+      script:
         - echo "Buidling LiveUpdate"
         - conan create lib/LiveUpdate includeos/latest -pr clang-6.0-macos-x86_64
 
