@@ -4,30 +4,34 @@ compiler:
   - clang
   - gcc
 
+addons:
+  homebrew:
+    packages:
+    - cmake
+    - conan
+    - nasm
+    - llvm@6
+
 jobs:
   include:
-    - stage: kernel
-      addons:
-        homebrew:
-          packages:
-          - cmake
-          - conan
-          - nasm
-          - llvm@6
-
-      before_install:
+    - script: clang-6.0-x86_64
         - export CC=/usr/local/opt/llvm\@6/bin/clang
         - export CXX=/usr/local/opt/llvm\@6/bin/clang++
-        - git fetch --tags https://github.com/includeos/IncludeOS.git
+        - echo "BUILDING KERNEL"
+        - conan create . includeos/latest -pr clang-6.0-macos-x86_64
+        - echo "BUILDING LiveUpdate"
+        - conan create lib/LiveUpdate includeos/latest -pr clang-6.0-macos-x86_64
+    - script: gcc-7.3-x86_64
+        - echo "build gcc-7.3"
 
-      install:
-        - conan config install https://github.com/includeos/conan_config.git
-        - conan --version
-        - clang --version
+    - script: GCC-8.2-aarch64
+        - echo "build gcc-8.2"
 
-      script: conan create . includeos/latest -pr clang-6.0-macos-x86_64
-      name: "Building Kernel x86_64"
-      
-    - stage: liveupdate
-      script: conan create lib/LiveUpdate includeos/latest -pr clang-6.0-macos-x86_64
-      name: "LiveUpdate on Kernel x86_64"
+
+before_install:
+  - git fetch --tags https://github.com/includeos/IncludeOS.git
+
+install:
+  - conan config install https://github.com/includeos/conan_config.git
+  - conan --version
+  - clang --version
