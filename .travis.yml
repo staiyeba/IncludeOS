@@ -4,14 +4,6 @@ compiler:
   - clang
   - gcc
 
-addons:
-  homebrew:
-    packages:
-    - cmake
-    - conan
-    - nasm
-    - llvm@6
-
 cache:
   ccache: true
   directories:
@@ -27,8 +19,6 @@ before_install:
   - git fetch --tags https://github.com/includeos/IncludeOS.git
 
 install:
-  - conan config install https://github.com/includeos/conan_config.git
-  - conan --version
   - clang --version
 
 before_script:
