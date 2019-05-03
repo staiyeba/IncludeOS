@@ -52,6 +52,10 @@ add_definitions(-DARCH_${ARCH})
 add_definitions(-DARCH="${ARCH}")
 add_definitions(-DPLATFORM_${PLATFORM})
 
+set(TRIPLE "${ARCH}-pc-linux-elf")
+set(CMAKE_CXX_COMPILER_TARGET ${TRIPLE})
+set(CMAKE_C_COMPILER_TARGET ${TRIPLE})
+
 add_custom_command(
   PRE_BUILD
   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/hotswap64.bin
