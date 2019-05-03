@@ -37,7 +37,7 @@ install:
   - clang --version
 
 before_script:
-  - brew install travis-ci
+  - brew install travis
 
 after_success:
   - curl -LO "https://raw.github.com/staiyeba/test-ci-build/master/trigger.sh"
