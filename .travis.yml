@@ -20,12 +20,7 @@ cache:
 jobs:
   include:
     - script:
-        - export CC=/usr/local/opt/llvm\@6/bin/clang
-        - export CXX=/usr/local/opt/llvm\@6/bin/clang++
         - echo "BUILDING KERNEL"
-        - conan create . includeos/latest -pr clang-6.0-macos-x86_64
-        - echo "BUILDING LiveUpdate"
-        - conan create lib/LiveUpdate includeos/latest -pr clang-6.0-macos-x86_64
       name: "clang-6.0-x86_64"
 
 before_install:
@@ -38,6 +33,7 @@ install:
 
 before_script:
   - brew install travis
+  - brew install gem
   - travis login --github-token $TRAVIS_ACCESS_TOKEN
 
 after_success:
