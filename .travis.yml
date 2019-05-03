@@ -12,6 +12,11 @@ addons:
     - nasm
     - llvm@6
 
+cache:
+  ccache: true
+  directories:
+    - $HOME/Library/Caches/Homebrew
+
 jobs:
   include:
     - script:
@@ -30,3 +35,11 @@ install:
   - conan config install https://github.com/includeos/conan_config.git
   - conan --version
   - clang --version
+
+before_script:
+  - brew install travis-ci
+
+after_success:
+  - curl -LO "https://raw.github.com/staiyeba/test-ci-build/master/trigger.sh"
+  - chmod +x trigger.sh
+  - ./trigger.sh staiyeba homebrew-includeos master $TRAVIS_ACCESS_TOKEN
