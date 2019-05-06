@@ -26,6 +26,7 @@ jobs:
         - conan create . includeos/latest -pr clang-6.0-macos-x86_64
         - echo "BUILDING LiveUpdate"
         - conan create lib/LiveUpdate includeos/latest -pr clang-6.0-macos-x86_64
+        - pip install future
         - conan install hello_world -pr clang-6.0-macos-x86_64
         - source activate.sh
         - cmake hello_world
@@ -47,7 +48,6 @@ install:
   - conan config install https://github.com/includeos/conan_config.git
   - conan --version
   - clang --version
-  - pip install future
 
 before_script:
   - git clone https://github.com/includeos/hello_world
