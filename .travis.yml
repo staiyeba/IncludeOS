@@ -49,7 +49,7 @@ install:
   - clang --version
 
 before_script:
-  - git clone https://github.com/includeos/hello_world
+  - git clone https://github.com/includeos/hello_world.git
 
 after_script:
   - source deactivate.sh
