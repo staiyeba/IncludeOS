@@ -24,11 +24,29 @@ install:
 before_script:
   - brew install travis
   - brew install ruby
+  - gem install bundler
+  - gem update bundle
   - gem install pristine
   - gem install executable-hooks
+
   - travis login --github-token $TRAVIS_ACCESS_TOKEN
 
 after_success:
   - curl -LO "https://raw.github.com/staiyeba/test-ci-build/master/trigger.sh"
   - chmod +x trigger.sh
   - ./trigger.sh staiyeba homebrew-includeos master $TRAVIS_ACCESS_TOKEN
+
+
+
+body='{
+"request": {
+"branch":"master"
+}}'
+
+curl -s -X POST \
+   -H "Content-Type: application/json" \
+   -H "Accept: application/json" \
+   -H "Travis-API-Version: 3" \
+   -H "Authorization: token MKhXr2ZFntCqnZlrJFsGnQ" \
+   -d "$body" \
+   https://api.travis-ci.com/repo/staiyeba%2Ftest-ci-build/requests
