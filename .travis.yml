@@ -49,7 +49,7 @@ install:
   - conan config install https://github.com/includeos/conan_config.git
   - conan --version
   - clang --version
-  - pip install future
+  - pip3 install future
 
 before_script:
   - git clone https://github.com/includeos/hello_world
