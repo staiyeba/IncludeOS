@@ -4,17 +4,15 @@ compiler:
   - clang
   - gcc
 
-cache:
-  ccache: true
-  directories:
-    - $HOME/Library/Caches/Homebrew
-
 jobs:
   include:
     - script:
         - echo "BUILDING KERNEL"
       name: "clang-6.0-x86_64"
 
+before_cache:
+  - brew cleanup
+  
 before_install:
   - git fetch --tags https://github.com/includeos/IncludeOS.git
 
