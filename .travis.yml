@@ -31,14 +31,8 @@ jobs:
         - source activate.sh
         - cmake hello_world
         - cmake --build .
-        - timeout 7 boot hello > hello_log.txt || true
-        - |
-          if grep -F "Running [ Hello world - OS included ]" hello_log.txt
-          then
-            echo "Hello World -  Success! :)"
-          else
-            echo "Failed :("
-          fi
+        - gtimeout 7 boot hello > hello_log.txt || true
+
       name: "clang-6.0-x86_64"
 
 before_install:
