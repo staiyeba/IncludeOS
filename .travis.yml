@@ -23,6 +23,7 @@ install:
 
 before_script:
   - brew install travis
+  - travis --version
   - brew install ruby
   - gem install pristine
   - gem update pristine
