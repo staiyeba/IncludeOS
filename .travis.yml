@@ -23,10 +23,9 @@ before_script:
   - brew install travis
   - travis --version
   - brew install ruby
-  - gem update pristine
-  - gem install pristine
-  - gem update executable-hooks
-  - gem install executable-hooks
+  - gem install bundler
+  - gem update bundle
+  - gem install bundle
 
   - travis login --github-token $TRAVIS_ACCESS_TOKEN
 
