@@ -3,6 +3,7 @@ osx_image: xcode10.2
 compiler:
   - clang
   - gcc
+language: python
 
 addons:
   homebrew:
@@ -18,7 +19,7 @@ before_cache:
 cache:
   - directories:
     - $HOME/Library/Caches/Homebrew
-    
+
 jobs:
   include:
     - script:
@@ -35,3 +36,4 @@ install:
   - conan config install https://github.com/includeos/conan_config.git
   - conan --version
   - clang --version
+  - pip install future
