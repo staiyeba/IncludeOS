@@ -38,7 +38,7 @@ jobs:
           else
             echo "Failed :("
           fi
-            name: "clang-6.0-x86_64"
+        name: "clang-6.0-x86_64"
 
 before_install:
   - git fetch --tags https://github.com/includeos/IncludeOS.git
