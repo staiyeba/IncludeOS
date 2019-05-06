@@ -31,7 +31,7 @@ jobs:
         - source activate.sh
         - cmake hello_world
         - cmake --build .
-        - gtimeout 7 boot hello > hello_log.txt || true
+        - timeout 7 boot hello > hello_log.txt || true
         - |
           if grep -F "Running [ Hello world - OS included ]" hello_log.txt
           then
