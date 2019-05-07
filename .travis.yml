@@ -51,7 +51,7 @@ install:
   - conan --version
   - clang --version
   - pip3 install future
-  - pip3 install psutil
+  - pip3 install --upgrade psutil
 
 before_script:
   - git clone https://github.com/includeos/hello_world
