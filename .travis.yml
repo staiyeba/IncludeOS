@@ -38,6 +38,7 @@ jobs:
             echo "Hello World -  Success! :)"
           else
             echo "Failed :("
+            cat hello_log.txt
             exit 1
           fi
       name: "clang-6.0-x86_64"
