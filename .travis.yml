@@ -27,7 +27,8 @@ jobs:
         - conan create . includeos/latest -pr clang-6.0-macos-x86_64
         - echo "BUILDING LiveUpdate"
         - conan create lib/LiveUpdate includeos/latest -pr clang-6.0-macos-x86_64
-        - conan install hello_world -pr clang-6.0-macos-x86_64
+        - mkdir build_hello_world && cd build_hello_world
+        - conan install ../hello_world -pr clang-6.0-macos-x86_64
         - source activate.sh
         - cmake hello_world
         - cmake --build .
