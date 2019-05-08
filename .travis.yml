@@ -40,7 +40,7 @@ jobs:
           else
             echo "Failed :("
             cat hello_log.txt
-            sleep 5
+            sleep 20
             exit 1
           fi
       name: "clang-6.0-x86_64"
@@ -56,6 +56,7 @@ install:
   - pip3 install --upgrade psutil
   - pip3 install --upgrade jsonschema
   - conan download vmrunner/0.16.0@includeos/stable
+  - brew install openssl
 
 before_script:
   - git clone https://github.com/includeos/hello_world
