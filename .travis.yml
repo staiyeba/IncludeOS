@@ -30,7 +30,7 @@ jobs:
         - mkdir build_hello_world && cd build_hello_world
         - conan install ../hello_world -pr clang-6.0-macos-x86_64
         - source activate.sh
-        - cmake ../hello_world -DFOR_PRODUCTION=OFF
+        - cmake -DFOR_PRODUCTION=OFF ../hello_world 
         - cmake --build .
         - gtimeout 7 boot hello > hello_log.txt || true
         - |
