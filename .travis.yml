@@ -51,3 +51,5 @@ install:
   - conan --version
   - clang --version
   - pip3 install future
+  - pip3 install --upgrade psutil
+  - pip3 install --upgrade jsonschema
