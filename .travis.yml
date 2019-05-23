@@ -32,7 +32,7 @@ jobs:
         - source activate.sh
         - cmake -DFOR_PRODUCTION=OFF hello_world
         - cmake --build .
-        - boot hello 2>&1 || true
+        - boot hello
         - |
           if grep -F "Running [ Hello world - OS included ]" hello.log
           then
