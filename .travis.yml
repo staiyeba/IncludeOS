@@ -36,3 +36,18 @@ install:
   - conan config install https://github.com/includeos/conan_config.git
   - conan --version
   - clang --version
+
+after_script:
+  - git clone https://github.com/includeos/hello_world
+  - conan install hello_world -pr clang-6.0-macos-x86_64
+  - source activate.sh
+  - cmake -DFOR_PRODUCTION=OFF hello_world
+  - cmake --build .
+  - gtimeout 10 boot hello 2>&1 | tee hello.log  || true
+  - |
+    if grep -F "Running [ Hello world - OS included ]" hello.log
+    then
+      echo "Hello World -  Success! :)"
+    else
+      exit 1
+    fi
