@@ -51,5 +51,3 @@ install:
   - conan --version
   - clang --version
   - pip install future
-
-after_script:
