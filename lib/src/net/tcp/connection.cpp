@@ -319,6 +319,36 @@ void Connection::receive_disconnect() {
   }
 }
 
+void Connection::update_fin(const Packet_view& pkt)
+{
+  Expects(pkt.isset(FIN));
+  // should be no problem calling multiple times
+  // as long as fin do not change (which it absolutely shouldnt)
+  fin_recv_ = true;
+  fin_seq_  = pkt.end();
+}
+
+void Connection::handle_fin()
+{
+  // Advance RCV.NXT over the FIN
+  cb.RCV.NXT++;
+  const auto snd_nxt = cb.SND.NXT;
+
+  // empty the read buffer
+  //if(read_request and read_request->size())
+  //  receive_disconnect();
+
+  // signal disconnect to the user
+  signal_disconnect(Disconnect::CLOSING);
+
+  // only ack FIN if user callback didn't result in a sent packet
+  if(cb.SND.NXT == snd_nxt) {
+    debug2("<Connection::handle_fin> acking FIN\n");
+    auto packet = outgoing_packet();
+    packet->set_ack(cb.RCV.NXT).set_flag(ACK);
+    transmit(std::move(packet));
+  }
+}
 
 void Connection::segment_arrived(Packet_view& incoming)
 {
@@ -988,11 +1018,17 @@ void Connection::retransmit() {
     packet->set_flag(ACK);
   }
   // If retransmission from either SYN-SENT or SYN-RCV, add SYN
-  if(UNLIKELY(is_state(SynSent::instance()) or is_state(SynReceived::instance())))
+  if(UNLIKELY(is_state(SynSent::instance())))
   {
     packet->set_flag(SYN);
-    packet->set_seq(cb.SND.UNA);
     syn_rtx_++;
+    add_syn_options(*packet);
+  }
+  else if(UNLIKELY(is_state(SynReceived::instance())))
+  {
+    packet->set_flag(SYN);
+    syn_rtx_++;
+    add_synack_options(*packet);
   }
   // If not, check if there is data and retransmit
   else if(writeq.size())
@@ -1387,6 +1423,53 @@ void Connection::add_option(Option::Kind kind, Packet_view& packet) {
   default:
     break;
   }
+}
+
+void Connection::add_syn_options(Packet_view& packet)
+{
+  Expects(packet.isset(SYN));
+  Expects(not packet.isset(ACK));
+  // Always MSS
+  add_option(Option::MSS, packet);
+
+  // Window scaling
+  if(uses_window_scaling())
+  {
+    add_option(Option::WS, packet);
+    //packet.set_win(std::min((uint32_t)default_window_size, cb.RCV.WND));
+  }
+  // Add timestamps
+  if(uses_timestamps())
+  {
+    add_option(Option::TS, packet);
+  }
+  // Use SACK
+  if(uses_SACK())
+  {
+    add_option(Option::SACK_PERM, packet);
+  }
+}
+
+void Connection::add_synack_options(Packet_view& packet)
+{
+  Expects(packet.isset(SYN));
+  Expects(packet.isset(ACK));
+  // Always MSS
+  add_option(Option::MSS, packet);
+
+  // This means WS was accepted in the SYN packet
+  if(cb.SND.wind_shift > 0)
+  {
+    add_option(Option::WS, packet);
+    packet.set_win(std::min((uint32_t)default_window_size, cb.RCV.WND));
+  }
+  // SACK permitted
+  if(sack_perm == true)
+  {
+    add_option(Option::SACK_PERM, packet);
+  }
+
+  // NOTE: Timestamp is already handled by create_outgoing_packet
 }
 
 bool Connection::uses_window_scaling() const noexcept
