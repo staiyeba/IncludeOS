@@ -28,6 +28,9 @@ jobs:
         - conan create lib/LiveUpdate includeos/latest -pr clang-6.0-macos-x86_64
       name: "clang-6.0-x86_64"
 
+before_install:
+  - git fetch --tags https://github.com/includeos/IncludeOS.git
+
 install:
   - conan config install https://github.com/includeos/conan_config.git
   - conan --version
